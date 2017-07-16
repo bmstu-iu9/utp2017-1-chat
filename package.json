@@ -1,0 +1,14 @@
+{
+  "name": "chat",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "db": "latest",
+    "tech": "latest",
+    "config": "latest",
+    "js-sha3": "0.6.1"
+  }
+}

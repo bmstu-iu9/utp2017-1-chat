@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Auth</title>
+</head>
+<body class="container">
+<p class="lead">Welcome to the Chat</p>
+
+<form id="Log" class="form-inline">
+        <b>Login</b>
+        <label>
+            <input type="text" name="login"/>
+        </label>
+
+        <b>Password</b>
+        <label>
+            <input type="text" name="password"/>
+        </label>
+
+    <input type="submit" class="btn btn-primary" value="Log In"/>
+</form>
+<script>
+    Log.onsubmit = function() {
+
+        var xhr = new XMLHttpRequest();
+
+        xhr.open("POST", "/auth", true);
+
+        if (this.elements.login.value != "" &&
+            this.elements.password.value != "") {
+
+            xhr.send(JSON.stringify({}));
+
+            var secret = subscribe();
+            var hash = keccak512(this.elements.login.value + //NEED TO IMPORT KECCAK!!!!!!!!!
+                this.elements.password.value + secret);
+            xhr.send(JSON.stringify({hash: hash,
+                login: this.elements.login.value}));
+            var x = subscribe();
+            if (x != "decline")
+                window.location.href += x;
+        }
+
+        this.elements.password.value = "";
+
+        //need to say that login or password is incorrect
+
+        return false;
+
+    };
+
+    function subscribe() {
+        var xhr = new XMLHttpRequest();
+
+        xhr.open("GET", "/s_auth", true);
+
+        xhr.onload = function() {
+            return this.response;
+        };
+
+        xhr.onerror = xhr.onabort = function() { //this function let page not to fall after error
+            setTimeout(subscribe, 500);
+        };
+
+        xhr.send('');
+    }
+</script>
+</body>
+</html>
