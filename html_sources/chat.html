@@ -37,16 +37,29 @@
 
         xhr.open("GET", "chat/subscribe", true);
 
-        xhr.onload = function() {
-            var li = document.createElement('li');
-            li.textContent = this.responseText;
-            messages.appendChild(li);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4) {
+                console.log(xhr.status);
+                if (xhr.status == 302) {
+                    window.location.replace(window.location.origin
+                        + xhr.getResponseHeader('Location'));
 
-            subscribe();
+                } else if (xhr.status == 200) {
+
+                    var li = document.createElement('li');
+                    li.textContent = this.responseText;
+                    messages.appendChild(li);
+
+                    subscribe();
+
+                } else {
+                    setTimeout(subscribe, 100);
+                }
+            }
         };
 
-        xhr.onerror = xhr.onabort = function() { //this function let page not to fall after error
-            setTimeout(subscribe, 500);
+        xhr.onabort = function() { //this function let page not to fall after error
+            setTimeout(subscribe, 100);
         };
 
         xhr.send('');

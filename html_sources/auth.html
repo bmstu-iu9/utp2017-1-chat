@@ -7,63 +7,133 @@
 <body class="container">
 <p class="lead">Welcome to the Chat</p>
 
-<form id="Log" class="form-inline">
-        <b>Login</b>
-        <label>
-            <input type="text" name="login"/>
-        </label>
+<p><b>Login</b>
+    <label>
+        <input type="text" id="login"/>
+    </label></p>
 
-        <b>Password</b>
-        <label>
-            <input type="text" name="password"/>
-        </label>
-
-    <input type="submit" class="btn btn-primary" value="Log In"/>
-</form>
+<p><b>Password</b>
+    <label>
+        <input type="password" id="password"/>
+    </label></p>
+<button onclick="logBtn()" name="log">Log in</button>
+<button onclick="regBtn()" name="reg">Register</button>
 <script>
-    Log.onsubmit = function() {
+    function logBtn() {
+        var login = document.getElementById("login").value;
+        var password = document.getElementById("password").value;
 
-        var xhr = new XMLHttpRequest();
+        var origin = window.location.origin;
 
-        xhr.open("POST", "/auth", true);
+        /**
+         * This block of promises takes a login and session ID,
+         * send them to the server
+         * gets response
+         * If this response contains route to the chat
+         * user redirects automatically
+         * Else from response extracted salt
+         * Then to the server sends request with login and hashed password+salt
+         * If all data is correct, user redirected to chat
+         */
+        getSalt(login)
+            .then(function(data) {
+                if (!data) {
+                    document.getElementById("login").value = "";
+                    document.getElementById("password").value = "";
+                    //message about the absence of a user in db
+                }
+                else {
+                    console.log(data, ' ', sha(password + data));
+                    authCheck(login, sha(password + data))
+                        .then(function(data1) {
+                            window.location.replace(origin + data1);
+                        })
+                        .catch(function (err1) {
+                            if (err1 == 401) {
+                                document.getElementById("login").value = "";
+                                document.getElementById("password").value = "";
+//TODO: frontend: show message about incorrect login or password
+                            } else {
+                                window.location.replace(origin + '/error');
+                            }
+                        })
+                }
+            })
+            .catch(function(err) {
+                window.location.replace(origin + '/error');
+            });
+    }
+    function regBtn() {
+         window.location.replace(window.location.origin + '/reg');
+    }
+</script>
+<script>
+    function getSalt(login) {
+        return new Promise(function(response, reject) {
+            var xhr = new XMLHttpRequest();
 
-        if (this.elements.login.value != "" &&
-            this.elements.password.value != "") {
+            xhr.open("POST", '/auth/connect', true);
 
-            xhr.send(JSON.stringify({}));
+            xhr.send(JSON.stringify({ "login": login }));
 
-            var secret = subscribe();
-            var hash = keccak512(this.elements.login.value + //NEED TO IMPORT KECCAK!!!!!!!!!
-                this.elements.password.value + secret);
-            xhr.send(JSON.stringify({hash: hash,
-                login: this.elements.login.value}));
-            var x = subscribe();
-            if (x != "decline")
-                window.location.href += x;
-        }
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    if (xhr.status == 200) {
+                        response(this.responseText);
 
-        this.elements.password.value = "";
+                    } else {
+                        reject(xhr.status);
 
-        //need to say that login or password is incorrect
+                    }
+                }
+            };
 
-        return false;
+            xhr.onabort = function() {
+                reject(xhr.status);
+            }
+        })
+    }
+</script>
+<script>
+    function authCheck(login, password) {
+        return new Promise(function(response, reject) {
+            var xhr = new XMLHttpRequest();
 
-    };
+            xhr.open("POST", '/auth/direct', true);
 
-    function subscribe() {
-        var xhr = new XMLHttpRequest();
+            xhr.send(JSON.stringify({ "login": login, "password": password }));
 
-        xhr.open("GET", "/s_auth", true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4) {
+                    if (xhr.status == 200) {
+                        response(this.responseText);
 
-        xhr.onload = function() {
-            return this.response;
-        };
+                    } else {
+                        reject(xhr.status);
 
-        xhr.onerror = xhr.onabort = function() { //this function let page not to fall after error
-            setTimeout(subscribe, 500);
-        };
-
-        xhr.send('');
+                    }
+                }
+            };
+            
+            xhr.onabort = function() {
+                reject(xhr.status);
+            }
+        })
+    }
+</script>
+<script>
+    function getCookie(name) {
+        var matches = document.cookie.match(new RegExp(
+            "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1')
+            + "=([^;]*)"
+        ));
+        return matches ? decodeURIComponent(matches[1]) : undefined;
+    }
+</script>
+<script>
+    function sha(string) {
+        return string;//stub
+        //TODO: import keccak512 from server
     }
 </script>
 </body>
