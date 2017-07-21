@@ -5,87 +5,73 @@ var tech = require('tech').server_tech;
 var log = require('tech').log;
 var db = require('db');
 var config = require('config');
+var extra = require('./modules/extra');
 
-var body;
 
 http.createServer(function(req, res) {
+    db.sessions.connect();
+    db.users.connect();
+
     switch (req.url) {
         case '/':
+            auth.session(req, res);
+            break;
+        case '/error':
+            require('./modules/send')("html_sources/error.html", res);
+            break;
+        case '/auth':
             require('./modules/send')("html_sources/auth.html", res);
             break;
-        /* TODO: This fragment of rooter contains authentication root */
-        /*case '/auth':
-            body = '';
-
-            req
-                .on('readable', function() {
-                    var r = req.read();
-                    if (r != null)
-                        body += r;
-
-                    if (body.length > 1e4){
-                        res.statusCode = 413;
-                        res.end("Message is too long");
-                        log.error("413 in reading message");
-                    }
-                })
-                .on('end', function() {
-                    try {
-                        body = JSON.parse(body);
-
-                        if (body.hash)
-                            res.end(config.SECRET_KEY);
-                        else
-                            auth.getHash(res, body.login, body.hash);
-
-                        res.end("ok");
-
-                    } catch (err) {
-                        res.statusCode = 400;
-                        res.end("Bad Request");
-                        log.error('server/publish: ' + err + 'body: ' + body);
-                    }
-                });
+        case '/auth/connect':
+            auth.salt(req, res);
             break;
-        case '/s_auth':
-            auth.send(req, res);
-            break;*/
+        case '/auth/direct':
+            auth.auth(req, res);
+            break;
+        case '/reg':
+            require('./modules/send')("html_sources/register.html", res);
+            break;
         case '/chat':
-            require('./modules/send')("html_sources/chat.html", res);
+            //if server don't contain sessionID, redirect to auth
+            console.log(new Date().getTime());
+            db.sessions.deleteOldSessions()
+                .then(function(data){
+                    db.sessions.getSession(extra.parseCookies(req).sessionID)
+                        .then(function(data) {
+                            if (data)
+                                require('./modules/send')("html_sources/chat.html", res);
+                            else {
+                                res.writeHead(302, { Location: 'auth'});
+                                res.end();
+                            }
+                        })
+                        .catch(function (err) {
+                            log.error("Error at server.js/chat/getSession:", err);
+                        });
+                })
+                .catch(function (err) {
+                    log.error('Error at server.js/chat/deleteOldSessions:', err);
+                });
             break;
         case '/chat/subscribe':
-            chat.subscribe(req, res);
-            break;
-        case '/chat/publish':
-            body = '';
-
-            req
-                .on('readable', function() { //long-read message
-                    var r = req.read();
-                    if (r != null)
-                        body += r;
-                    
-                    if (body.length > 1e4){
-                        res.statusCode = 413;
-                        res.end("Message is too long");
-                        log.error("413 in reading message");
+            db.sessions.getSession(extra.parseCookies(req).sessionID)
+                .then(function(data) {
+                    if (data)
+                        chat.subscribe(req, res);
+                    else {
+                        res.writeHead(302, { Location: ''});
+                        res.end();
                     }
                 })
-                .on('end', function() { //JSON-safe function
-                    try {
-                        body = JSON.parse(body);
-                        
-                        chat.publish(body.message);
-                        res.end("ok");
-
-                    } catch (err) {
-                        res.statusCode = 400;
-                        res.end("Bad Request");
-                        log.error('server/publish: ' + err + 'body: ' + body);
-                    }
+                .catch(function (err) {
+                    log.error("Error at server.js/chat/getSession", err);
                 });
             break;
+        case '/chat/publish':
+            chat.publish(req, res);
+            break;
         default:
+            //need to redirect to error.html, maybe
             res.statusCode = 404;
             res.end("Page not found");
             log.error("default case in rooter");

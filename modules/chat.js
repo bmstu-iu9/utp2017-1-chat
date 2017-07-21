@@ -1,4 +1,5 @@
 var log = require('tech').log;
+var extra = require('./extra');
 
 var clients = [];
 
@@ -11,7 +12,6 @@ var clients = [];
  * catch it by function publish
  */
 exports.subscribe = function(req, res) {
-    log.debug('subscribe');
 
     clients.push(res);
 
@@ -22,12 +22,19 @@ exports.subscribe = function(req, res) {
     log.debug(clients.length);
 };
 
-exports.publish = function(message) {
-    log.debug('publish: ' + message);
+exports.publish = function(req, res) {
 
-    clients.forEach(function(res) {
-        res.end(message);
-    });
-    
-    clients = [];
+    extra.safeRequest(req, res)
+        .then(function (data) {
+
+            clients.forEach(function(res) {
+                res.end(data.message);
+            });
+
+            clients = [];
+        })
+        .catch(function (err) {
+            log.error("Error at chat.js/publish:", err);
+
+        });
 };
