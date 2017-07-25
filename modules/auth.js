@@ -24,11 +24,10 @@ exports.session = function(req, res) {
 exports.auth = function(req, res) {
     extra.safeRequest(req, res)
         .then(function(body) {
-            db.users.getUserWrite(body.login)
+            db.users.getUserRead(body.login)
                 .then(function (data) {
 
                     if (data) {
-                        
                         if (data.password == body.password) {
                             db.sessions.addSession(body.login,
                                 new Date().getTime() + 86409000)

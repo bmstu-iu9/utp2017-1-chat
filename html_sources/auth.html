@@ -40,11 +40,11 @@
                 if (!data) {
                     document.getElementById("login").value = "";
                     document.getElementById("password").value = "";
-                    //message about the absence of a user in db
+                    //TODO: message about the absence of a user in db
+
                 }
                 else {
-                    console.log(data, ' ', sha(password + data));
-                    authCheck(login, sha(password + data))
+                    authCheck(login, sha(password, data))
                         .then(function(data1) {
                             window.location.replace(origin + data1);
                         })
@@ -52,9 +52,11 @@
                             if (err1 == 401) {
                                 document.getElementById("login").value = "";
                                 document.getElementById("password").value = "";
-//TODO: frontend: show message about incorrect login or password
+                                //TODO: show message about incorrect login or password
+
                             } else {
                                 window.location.replace(origin + '/error');
+
                             }
                         })
                 }
@@ -99,7 +101,7 @@
         return new Promise(function(response, reject) {
             var xhr = new XMLHttpRequest();
 
-            xhr.open("POST", '/auth/direct', true);
+            xhr.open("POST", '/auth/enter', true);
 
             xhr.send(JSON.stringify({ "login": login, "password": password }));
 
@@ -131,8 +133,14 @@
     }
 </script>
 <script>
-    function sha(string) {
-        return string;//stub
+    function sha(password, salt) {
+        var n = salt.substr(0, 1);
+        salt = salt.substr(1, salt.length - 1);
+
+        for (var i = 0; i < n; i++)
+            password = password + salt; //stub
+            //password = sha3(password + salt)
+        return password;
         //TODO: import keccak512 from server
     }
 </script>

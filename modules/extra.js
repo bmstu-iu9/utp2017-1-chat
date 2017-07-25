@@ -22,7 +22,7 @@ exports.safeRequest = function(req, res) {
                 if (r != null)
                     body += r;
 
-                if (body.length > 1e2) {
+                if (body.length > 1e4) {
                     res.statusCode = 413;
                     res.end("Message is too long");
                     log.error("413 in reading message");
@@ -31,7 +31,8 @@ exports.safeRequest = function(req, res) {
             })
             .on('end', function () { //JSON-safe function
                 try {
-                    body = JSON.parse(body);
+                    if (body)
+                        body = JSON.parse(body);
                     response(body);
 
                 } catch (err) {

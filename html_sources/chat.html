@@ -7,6 +7,8 @@
 <body class="container">
 <p class="lead">Welcome to the Chat</p>
 
+<button onclick="exit()" name="reg">Exit</button>
+
 <form id="publish" class="form-inline">
     <label>
         <input type="text" name="message"/>
@@ -16,6 +18,27 @@
 
 <ul id="messages"></ul>
 
+<script>
+    function exit() {
+        var xhr = new XMLHttpRequest();
+
+        xhr.open("POST", "chat/exit", true);
+
+        xhr.send(); //maybe send some info about user
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4) {
+                if (xhr.status == 302) {
+                    window.location.replace(window.location.origin
+                        + xhr.getResponseHeader('Location'));
+
+                } else {
+                    console.log(xhr.status);
+                }
+            }
+        }
+    }
+</script>
 <script>
     publish.onsubmit = function() {
         var xhr = new XMLHttpRequest();
