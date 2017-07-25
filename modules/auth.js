@@ -24,11 +24,10 @@ exports.session = function(req, res) {
 exports.auth = function(req, res) {
     extra.safeRequest(req, res)
         .then(function(body) {
-            db.users.getUserWrite(body.login)
+            db.users.getUserRead(body.login)
                 .then(function (data) {
 
                     if (data) {
-                        
                         if (data.password == body.password) {
                             db.sessions.addSession(body.login,
                                 new Date().getTime() + 86409000)
@@ -38,9 +37,12 @@ exports.auth = function(req, res) {
                                         + data + '; expires=' +
                                         (new Date(new Date().getTime() + 86409000))
                                             .toUTCString() + '; Path=/; HttpOnly';
+                                    var s1 = 'login=' + body.login + '; expires=' +
+                                        (new Date(new Date().getTime() + 86409000))
+                                            .toUTCString() + '; Path=/; HttpOnly';
 
                                     res.writeHead(200, {
-                                        'Set-Cookie': s
+                                        'Set-Cookie': [s, s1]
                                     });
                                     res.end('/chat');
 

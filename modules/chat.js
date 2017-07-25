@@ -19,7 +19,6 @@ exports.subscribe = function(req, res) {
         clients.splice(clients.indexOf(res), 1);
     });
 
-    log.debug(clients.length);
 };
 
 exports.publish = function(req, res) {

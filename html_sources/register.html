@@ -22,8 +22,109 @@
         <input type="password" id="rPassword"/>
     </label></p>
 <button onclick="regBtn()" name="reg">Register</button>
+
 <script>
-    //
+    function regBtn() {
+        var login = document.getElementById("login").value;
+        var password = document.getElementById("password").value;
+        var passwordRepeat = document.getElementById("rPassword").value;
+
+        if (password === passwordRepeat) {
+            getSalt()
+                .then(function (data) {
+                    registration(login, password, data)
+                        .then(function(data1) {
+                            window.location.replace(origin + data1);
+                        })
+                        .catch(function (err1) {
+                            if (err1 == 401) {
+                                document.getElementById("login").value = "";
+                                document.getElementById("password").value = "";
+                                document.getElementById("rPassword").value = "";
+                                //TODO: show message about incorrect login or password
+
+                            } else {
+                                window.location.replace(origin + '/error');
+                            }
+                        });
+                })
+                .catch(function(err) {
+                    window.location.replace(origin + '/error');
+                });
+        } else {
+            document.getElementById("password").value = "";
+            document.getElementById("rPassword").value = "";
+            //TODO: show message about incorrect password
+        }
+    }
+</script>
+<script>
+    function getSalt() {
+        return new Promise(function(response, reject) {
+            var xhr = new XMLHttpRequest();
+
+            xhr.open("POST", '/reg/connect', true);
+
+            xhr.send(null);
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    if (xhr.status == 200) {
+                        response(this.responseText);
+
+                    } else {
+                        reject(xhr.status);
+
+                    }
+                }
+            };
+
+            xhr.onabort = function() {
+                reject(xhr.status);
+            }
+        })
+    }
+</script>
+<script>
+    function registration(login, password, salt) {
+        return new Promise(function(response, reject) {
+            var xhr = new XMLHttpRequest();
+
+            xhr.open("POST", '/reg/enter', true);
+
+            xhr.send(JSON.stringify({ "login": login,
+                "password": sha(password, salt),
+                "salt": salt}));
+
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4) {
+                    if (xhr.status == 200) {
+                        response(this.responseText);
+
+                    } else {
+                        reject(xhr.status);
+
+                    }
+                }
+            };
+
+            xhr.onabort = function() {
+                reject(xhr.status);
+            }
+        })
+    }
+</script>
+<script>
+    function sha(password, salt) {
+        var n = salt.substr(0, 1);
+        salt = salt.substr(1, salt.length - 1);
+
+        for (var i = 0; i < n; i++)
+            password = password + salt; //stub
+        //password = sha3(password + salt)
+        return password;
+        //TODO: import keccak512 from server
+    }
 </script>
 </body>
 </html>
