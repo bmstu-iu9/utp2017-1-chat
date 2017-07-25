@@ -49,7 +49,7 @@ http.createServer(function(req, res) {
                     db.sessions.getSession(extra.parseCookies(req).sessionID)
                         .then(function(data) {
                             if (data) {
-                                require('./modules/send')("html_sources/chat.html", res);
+                                require('./modules/send')("html_sources/chat.html",res);
                             } else {
                                 res.writeHead(302, { Location: 'auth'});
                                 res.end();
