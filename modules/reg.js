@@ -17,20 +17,18 @@ exports.reg = function(req, res) {
                                 + data + '; expires=' +
                                 (new Date(new Date().getTime() + 86409000))
                                     .toUTCString() + '; Path=/; HttpOnly';
+                            var s1 = 'login=' + body.login + '; expires=' +
+                                (new Date(new Date().getTime() + 86409000))
+                                    .toUTCString() + '; Path=/; HttpOnly';
 
                             res.writeHead(200, {
-                                'Set-Cookie': s
+                                'Set-Cookie': [s, s1]
                             });
                             res.end('/chat');
 
                         })
                         .catch(function (err) {
-                            if (err == "Deprecated") {
-                                res.statusCode = 401;
-                                res.end();
-                            } else {
-                                log.error("Error at reg.js/reg:", err);
-                            }
+                            log.error("Error at reg.js/reg:", err);
                         });
                 })
                 .catch  (function (err) {
