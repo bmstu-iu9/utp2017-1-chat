@@ -6,9 +6,10 @@
     "start": "node server.js"
   },
   "dependencies": {
+    "config": "latest",
     "db": "latest",
     "tech": "latest",
-    "config": "latest",
+    "keypair": "latest",
     "js-sha3": "0.6.1"
   }
 }

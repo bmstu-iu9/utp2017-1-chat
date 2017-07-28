@@ -16,6 +16,7 @@ var log = require('tech').log;
 http.createServer(function(req, res) {
     db.sessions.connect();
     db.users.connect();
+    db.dialogs.connect();
 
     switch (req.url) {
         case '/':
