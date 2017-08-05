@@ -8,6 +8,7 @@
 <p class="lead">Welcome to the Chat</p>
 
 <button onclick="exit()" name="reg">Exit</button>
+<button onclick="smile()" id="emoji">Emoji</button>
 
 <form id="publish" class="form-inline">
     <label>
@@ -33,7 +34,7 @@
                         + xhr.getResponseHeader('Location'));
 
                 } else {
-                    console.log(xhr.status);
+                    console.log(xhr.status)
                 }
             }
         }
@@ -63,7 +64,6 @@
 
         xhr.onreadystatechange = function() {
             if (xhr.readyState == 4) {
-                console.log(xhr.status);
                 if (xhr.status == 302) {
                     window.location.replace(window.location.origin
                         + xhr.getResponseHeader('Location'));
@@ -87,6 +87,14 @@
         };
 
         xhr.send('');
+    }
+</script>
+<script>
+    function smile() {
+        //http://unicode.org/charts/PDF/U1F600.pdf
+        //TODO: create good emoji window
+        document.getElementById("publish").elements.message.value +=
+            String.fromCodePoint(0x1F601);
     }
 </script>
 </body>

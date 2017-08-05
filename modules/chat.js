@@ -1,5 +1,6 @@
 var log = require('tech').log;
 var extra = require('./extra');
+var db = require('db');
 
 var clients = [];
 
@@ -26,12 +27,20 @@ exports.publish = function(req, res) {
     extra.safeRequest(req, res)
         .then(function (data) {
 
-            var x = extra.parseCookies(req).login;
-            clients.forEach(function(res) {
-                res.end(x + " : " + data.message);
-            });
+            var name = require('./extra').parseCookies(req).login;
+            var time = (new Date(new Date().getTime()).toLocaleTimeString());
 
-            clients = [];
+            db.dialogs.addMessage('0', name, data.message, time)
+                .then(function (data1) {
+                    clients.forEach(function(res) {
+                        res.end(name + ': ' + data.message + '\t' + time);
+                    });
+
+                    clients = [];
+                })
+                .catch(function (err) {
+                    log.error(err);
+                });
         })
         .catch(function (err) {
             log.error("Error at chat.js/publish:", err);
