@@ -117,9 +117,6 @@ http.createServer(function(req, res) {
         case '/chat/publish':
             chat.publish(req, res);
             break;
-        case '/forge.min.js.map':
-            require('./modules/send')("html_sources/forge.min.js.map",res);
-            break;
         default:
             //TODO: need to redirect to error.html, maybe
             res.statusCode = 404;
