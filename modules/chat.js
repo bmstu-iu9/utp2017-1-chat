@@ -4,12 +4,12 @@ var extra = require('./extra');
 var clients = [];
 
 /**
- * Long-polling mechanism
+ * Long-polling mechanism.
  *
- * In subscribing server collects all active users
+ * Server collects all active users by subscribing.
  *
  * Then, when some message gets to the server, all users
- * catch it by function publish
+ * will catch it. (function "publish")
  */
 exports.subscribe = function(req, res) {
 
@@ -26,8 +26,9 @@ exports.publish = function(req, res) {
     extra.safeRequest(req, res)
         .then(function (data) {
 
+            var x = extra.parseCookies(req).login;
             clients.forEach(function(res) {
-                res.end(data.message);
+                res.end(x + " : " + data.message);
             });
 
             clients = [];
