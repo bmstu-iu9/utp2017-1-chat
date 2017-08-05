@@ -33,13 +33,8 @@ exports.auth = function(req, res) {
                                 new Date().getTime() + 86409000)
                                 .then(function(data) {
 
-                                    var s = 'sessionID='
-                                        + data + '; expires=' +
-                                        (new Date(new Date().getTime() + 86409000))
-                                            .toUTCString() + '; Path=/; HttpOnly';
-                                    var s1 = 'login=' + body.login + '; expires=' +
-                                        (new Date(new Date().getTime() + 86409000))
-                                            .toUTCString() + '; Path=/; HttpOnly';
+                                    var s = 'sessionID=' + data + '; Path=/';
+                                    var s1 = 'login=' + body.login + '; Path=/';
 
                                     res.writeHead(200, {
                                         'Set-Cookie': [s, s1]

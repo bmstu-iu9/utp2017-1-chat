@@ -16,6 +16,7 @@ var log = require('tech').log;
 http.createServer(function(req, res) {
     db.sessions.connect();
     db.users.connect();
+    db.dialogs.connect();
 
     switch (req.url) {
         case '/':
@@ -56,11 +57,11 @@ http.createServer(function(req, res) {
                             }
                         })
                         .catch(function (err) {
-                            log.error("Error at server.js/chat/getSession:", err);
+                            log.error("Error at app.js/chat/getSession:", err);
                         });
                 })
                 .catch(function (err) {
-                    log.error('Error at server.js/chat/deleteOldSessions:', err);
+                    log.error('Error at app.js/chat/deleteOldSessions:', err);
                 });
             break;
         case '/chat/exit':
@@ -70,7 +71,7 @@ http.createServer(function(req, res) {
                     res.end();
                 })
                 .catch(function (err) {
-                    log.error("Error at server.js/chat/deleteSession", err);
+                    log.error("Error at app.js/chat/deleteSession", err);
                 });
             break;
         case '/chat/subscribe':
@@ -88,26 +89,19 @@ http.createServer(function(req, res) {
                                     db.sessions.deleteSession(x.sessionID)
                                         .then(function (data1) {
 
-                                            var s = 'sessionID='
-                                                + data + '; expires=' +
-                                                (new Date(new Date().getTime()
-                                                    + 86409000)).toUTCString()
-                                                +'; Path=/; HttpOnly';
-                                            var s1 = 'login=' + x.login + '; expires='
-                                                + (new Date(new Date().getTime()
-                                                    + 86409000)).toUTCString()
-                                                + '; Path=/; HttpOnly';
+                                            var s = 'sessionID=' + data + '; Path=/';
+                                            var s1 = 'login=' + x.login + '; Path=/';
 
                                             res.writeHead(200, {
                                                 'Set-Cookie': [s, s1]
                                             });
                                         })
                                         .catch(function (err) {
-                                            log.error("Error at server.js/sb:", err);
+                                            log.error("Error at app.js/sb:", err);
                                         });
                                 })
                                 .catch(function (err) {
-                                    log.error("Error at server.js/sb:", err);
+                                    log.error("Error at app.js/sb:", err);
                                 });
                         }
                         chat.subscribe(req, res);
@@ -117,16 +111,19 @@ http.createServer(function(req, res) {
                     }
                 })
                 .catch(function (err) {
-                    log.error("Error at server.js/chat/getSession", err);
+                    log.error("Error at app.js/chat/getSession", err);
                 });
             break;
         case '/chat/publish':
             chat.publish(req, res);
             break;
+        case '/forge.min.js.map':
+            require('./modules/send')("html_sources/forge.min.js.map",res);
+            break;
         default:
             //TODO: need to redirect to error.html, maybe
             res.statusCode = 404;
             res.end("Page not found");
-            log.error("default case in rooter");
+            log.error("default case in rooter", req.url);
     }
 }).listen(8080);
