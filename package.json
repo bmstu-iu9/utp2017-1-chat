@@ -3,13 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "node server.js"
+    "start": "node app.js"
   },
   "dependencies": {
     "config": "latest",
     "db": "latest",
-    "tech": "latest",
+    "js-sha3": "0.6.1",
     "keypair": "latest",
-    "js-sha3": "0.6.1"
+    "node-forge": "^0.7.1",
+    "tech": "latest"
   }
 }
