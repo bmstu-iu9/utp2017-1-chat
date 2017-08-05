@@ -3,8 +3,8 @@ var log = require('tech').log;
 
 /**
  * Function send file for client
- * @param file, which is sent
- * @param res - where sent
+ * @param file - name of file to sent
+ * @param res - destination for file
  */
 module.exports = function(file, res) {
     var stream = fs.createReadStream(file);

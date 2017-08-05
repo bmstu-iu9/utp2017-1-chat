@@ -28,13 +28,12 @@
 
         /**
          * This block of promises takes a login and session ID,
-         * send them to the server
-         * gets response
-         * If this response contains route to the chat
-         * user redirects automatically
-         * Else from response extracted salt
-         * Then to the server sends request with login and hashed password+salt
-         * If all data is correct, user redirected to chat
+         * sends them to the server and gets response.
+         * If this response contains route to the chat,
+         * user will redirect automatically.
+         * Otherwise salt will be extracted from response and
+         * browser will send request to the server with login and hashed password+salt.
+         * If all data is correct, user will redirect to the chat.
          */
         getSalt(login)
             .then(function(data) {
@@ -54,6 +53,7 @@
                                 document.getElementById("login").value = "";
                                 document.getElementById("password").value = "";
                                 //TODO: show message about incorrect login or password
+
 
                             } else {
                                 window.location.replace(origin + '/error');
