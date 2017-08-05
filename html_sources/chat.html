@@ -40,6 +40,26 @@
     }
 </script>
 <script>
+    var xh = new XMLHttpRequest();
+    xh.onreadystatechange = function() {
+        if (xh.readyState == 4) {
+            console.log(xh.status);
+
+            if (xh.status == 200) {
+                JSON.parse(this.responseText).forEach(function(obj)
+                {
+                    var li = document.createElement('li');
+                    li.textContent = obj;
+                    messages.appendChild(li);
+                });
+            }
+        } else return;
+    }
+
+    xh.open("GET", "chat/getmsg", true);
+    xh.send();
+</script>
+<script>
     publish.onsubmit = function() {
         var xhr = new XMLHttpRequest();
 
