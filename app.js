@@ -117,6 +117,11 @@ http.createServer(function(req, res) {
         case '/chat/publish':
             chat.publish(req, res);
             break;
+        case '/chat/getmsg':
+            //////
+
+
+            break;
         case '/forge.min.js.map':
             require('./modules/send')("html_sources/forge.min.js.map",res);
             break;

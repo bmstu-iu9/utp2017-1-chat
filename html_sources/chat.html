@@ -45,7 +45,6 @@
         var xhr = new XMLHttpRequest();
 
         xhr.open("POST", "chat/publish", true);
-        //xhr.setHeader('')
 
         if (this.elements.message.value != "")
             xhr.send(JSON.stringify({message: this.elements.message.value}));
