@@ -1,6 +1,5 @@
 var log = require('tech').log;
 var extra = require('./extra');
-var msg = require('./message');
 
 var clients = [];
 
@@ -28,15 +27,14 @@ exports.publish = function(req, res) {
         .then(function (data) {
 
             var x = extra.parseCookies(req).login;
-            var date = new Date().toDateString();
-            msg.addMessage(x, data.message, date)
             clients.forEach(function(res) {
-                res.end(date + " : " + x + " : " + data.message);
+                res.end(x + " : " + data.message);
             });
 
             clients = [];
         })
         .catch(function (err) {
             log.error("Error at chat.js/publish:", err);
+
         });
 };

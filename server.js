@@ -3,7 +3,6 @@ var http = require('http');
 var chat = require('./modules/chat');
 var auth = require('./modules/auth');
 var reg = require('./modules/reg');
-var getmsg = require('./modules/message');
 
 var extra = require('./modules/extra');
 
@@ -123,9 +122,6 @@ http.createServer(function(req, res) {
             break;
         case '/chat/publish':
             chat.publish(req, res);
-            break;
-        case '/chat/getmsg':
-            getmsg.getMessages(res);
             break;
         default:
             //TODO: need to redirect to error.html, maybe
