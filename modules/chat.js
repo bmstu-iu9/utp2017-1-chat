@@ -5,12 +5,12 @@ var db = require('db');
 var clients = [];
 
 /**
- * Long-polling mechanism
+ * Long-polling mechanism.
  *
- * In subscribing server collects all active users
+ * Server collects all active users by subscribing.
  *
  * Then, when some message gets to the server, all users
- * catch it by function publish
+ * will catch it. (function "publish")
  */
 exports.subscribe = function(req, res) {
 
