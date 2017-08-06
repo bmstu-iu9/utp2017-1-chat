@@ -56,8 +56,8 @@
             }
         } else return;
     }
-    xhr.open("GET", "chat/getmsg", true);
-    xhr.setRequestHeader('room', 0);
+    xhr.open("GET", "chat/gethistory", true);
+    xhr.setRequestHeader('room', '0');
     xhr.send();
 </script>
 <script>

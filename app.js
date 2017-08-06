@@ -17,7 +17,7 @@ http.createServer(function(req, res) {
     db.sessions.connect();
     db.users.connect();
     db.dialogs.connect();
-    db.dialogs.addRoom(0);
+    db.dialogs.addRoom('0');
 
     switch (req.url) {
         case '/':
@@ -118,7 +118,7 @@ http.createServer(function(req, res) {
         case '/chat/publish':
             chat.publish(req, res);
             break;
-        case '/chat/getmsg':
+        case '/chat/gethistory':
             db.dialogs.getMessages(req.headers.room, 0, true)
                 .then(function(obj) {
                    res.end(JSON.stringify(obj));
