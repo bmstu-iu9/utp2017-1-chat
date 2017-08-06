@@ -41,6 +41,26 @@
     }
 </script>
 <script>
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+
+        if (xhr.readyState == 4) {
+            console.log(xhr.status);
+            if (xhr.status == 200) {
+                JSON.parse(this.responseText).forEach(function(obj)
+                {
+                    var li = document.createElement('li');
+                    li.textContent = obj.login + ": " + obj.text + " " + obj.date;
+                    messages.appendChild(li);
+                });
+            }
+        } else return;
+    }
+    xhr.open("GET", "chat/getmsg", true);
+    xhr.setRequestHeader('room', 0);
+    xhr.send();
+</script>
+<script>
     publish.onsubmit = function() {
         var xhr = new XMLHttpRequest();
 

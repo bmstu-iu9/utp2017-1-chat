@@ -17,6 +17,7 @@ http.createServer(function(req, res) {
     db.sessions.connect();
     db.users.connect();
     db.dialogs.connect();
+    db.dialogs.addRoom(0);
 
     switch (req.url) {
         case '/':
@@ -118,9 +119,10 @@ http.createServer(function(req, res) {
             chat.publish(req, res);
             break;
         case '/chat/getmsg':
-            //////
-
-
+            db.dialogs.getMessages(req.headers.room, 0, true)
+                .then(function(obj) {
+                   res.end(JSON.stringify(obj));
+                });
             break;
         case '/forge.min.js.map':
             require('./modules/send')("html_sources/forge.min.js.map",res);
