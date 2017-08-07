@@ -12,7 +12,7 @@ exports.session = function(req, res) {
                 res.end();
 
             } else {
-                res.writeHead(302, { Location: req.url + 'auth'});
+                res.writeHead(302, { Location: req.url + 'start'});
                 res.end();
             }
         })

@@ -77,7 +77,8 @@ function exit() {
 }
 
 function get_message(message){
-    var text = message.text;
+    var text = message.message;
+
     if (text != ""){
 
         var divMessage = document.createElement('div');
