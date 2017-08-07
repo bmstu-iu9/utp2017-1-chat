@@ -117,6 +117,7 @@ http.createServer(function(req, res) {
             break;
         case '/chat/publish':
             chat.publish(req, res);
+            chat.subscribe(req, res);
             break;
         case '/chat/gethistory':
             db.dialogs.getMessages(req.headers.room, 0, true)
