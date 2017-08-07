@@ -17,6 +17,8 @@ http.createServer(function(req, res) {
     db.sessions.connect();
     db.users.connect();
     db.dialogs.connect();
+    
+    db.dialogs.addRoom('0');
 
     switch (req.url) {
         case '/':

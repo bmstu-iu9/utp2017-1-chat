@@ -29,6 +29,7 @@ window.onload = function() {
     document.getElementsByClassName("submit")[1].addEventListener("click", authentication, false);
 };
 
+var origin = window.location.origin;
 /**
  * Registration functions
  */
@@ -128,8 +129,6 @@ function reg(login, password, salt) {
 function authentication() {
     var login = document.getElementById("login1").value;
     var password = document.getElementById("password1").value;
-
-    var origin = window.location.origin;
 
     /**
      * This block of promises takes a login and session ID,

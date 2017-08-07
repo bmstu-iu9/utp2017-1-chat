@@ -33,7 +33,8 @@ exports.publish = function(req, res) {
             db.dialogs.addMessage('0', name, data.message, time)
                 .then(function (data1) {
                     clients.forEach(function(res) {
-                        res.end(name + ': ' + data.message + '\t' + time);
+                        res.end(JSON.stringify({login: name,
+                            message: data.message, date: time}));
                     });
 
                     clients = [];

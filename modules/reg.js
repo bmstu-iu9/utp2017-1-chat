@@ -24,7 +24,7 @@ exports.reg = function(req, res) {
                             console.log(forge.pki.rsa.decrypt(data, keys.publicKey, true, false));
                             var key = forge.pki.publicKeyToPem(keys.publicKey);*/
 
-                            var s = 'sessionID=' + forge.util.encode64(data) + '; Path=/';
+                            var s = 'sessionID=' + data + '; Path=/';
                             var s1 = 'login=' + body.login + '; Path=/';
 
                             res.writeHead(200, {
