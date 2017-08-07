@@ -1,0 +1,221 @@
+*{
+	margin: 0;
+	padding: 0;
+}
+button::-moz-focus-inner,
+input[type="reset"]::-moz-focus-inner,
+input[type="button"]::-moz-focus-inner,
+input[type="submit"]::-moz-focus-inner,
+input[type="submit"]::-moz-focus-inner,
+input[type="file"] > input[type="button"]::-moz-focus-inner {/* */
+	border: none;
+}
+body{
+	background-color: rgb(140, 186, 243);
+}
+#zero div button {
+	display: block;
+	font-size: 3vw;
+	font-family: "Courier", monospace;
+	color: green;
+	padding: 5px;
+	width: 100%;
+	margin: 8px 0 0 0;
+	background-color:  rgb(237, 255, 171);
+	border: 2px solid green;
+	border-radius: 50px;
+}
+#zero div button:hover {
+	background-color: rgb(190, 247, 249);
+	color: rgb(2, 1, 161);
+	border-color: rgb(2, 1, 161);
+	cursor: pointer;
+}
+#zero div button:active {
+	background-color: rgb(140, 225, 255);
+}
+#zero {
+	top: 45%;
+	left: 50%;
+	position: absolute;
+}
+#zero div{
+	width: 110%;
+	margin-left: -55%;
+}
+header div img {
+	display: inline-block;
+	margin-top: 5%;
+}
+header {
+	height: 400px;
+	width: 100%;
+}
+#cloud1 {
+	height: 100%;
+	width: 30%;
+	position: absolute;
+	right: 0;
+	background-image: url("../image_sources/clouds/cloud1.png");
+	background-size: 100%;
+	background-repeat: no-repeat;
+	background-color: transparent;
+}
+#sun {
+	height: 100%;
+	width: 25%;
+	position: absolute;
+	background-position-x: -70px;
+	background-position-y: -70px;
+	background-image: url("../image_sources/clouds/sun.png");
+	background-size: 100%;
+	background-repeat: no-repeat;
+	background-color: transparent;
+}
+#cloud2 {
+	height: 100%;
+	width: 30%;
+	position: absolute;
+	left: 1%;
+	background-image: url("../image_sources/clouds/cloud2.png");
+	background-size: 100%;
+	background-repeat: no-repeat;
+	background-color: transparent;
+	background-position-y:8%;
+}
+footer {
+	background-image: url("../image_sources/grass/grass2.png");
+	background-position: bottom;
+	height: 30%;
+	width: 100%;
+	position: absolute;
+	bottom: 0;
+	background-size: 100%;
+	background-repeat: repeat-x;
+	z-index: 10;
+	background-color: transparent;
+}
+#bt {
+	height: 30%;
+	width: 15%;
+	position: absolute;
+	left: 80%;
+	top: 50%;
+	background-image: url("../image_sources/cat/butterfly.png");
+	background-size: 100%;
+	background-repeat: no-repeat;
+	z-index: 10;
+	background-color: transparent;
+}
+#back{
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background-color: black;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	z-index: 11;
+	opacity: 0.8;
+}
+#registration_form form, #enter_form form{
+	position: relative;
+}
+#registration_form{
+	height: 230px;
+}
+#enter_form{
+	height: 205px;
+}
+#registration_form, #enter_form{
+	display: none;
+	padding-top: 10px;
+	z-index: 12;
+	width: 50%; 
+	min-width: 400px;
+	max-width: 500px;
+	overflow: auto;
+	margin: auto;
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	background-color: rgb(227, 255, 250);
+	border-radius: 25px;
+	border: 5px solid green
+}
+.legend{
+	color:green;
+	margin-left: 10px;
+	font-family: "Courier", monospace;
+}
+#registration_form div, #enter_form div{
+	color:green;
+	font-size: 20px;
+	margin-top: 10px;
+	margin-left: 10px;
+	font-family: "Courier", monospace;
+}
+#registration_form div button, #enter_form div button{
+	display: block;
+	font-size: 20px;
+	font-family: "Courier", monospace;
+	color: green;
+	padding: 5px;
+	width: 30%;
+	margin: 8px 0 0 0;
+	background-color:  rgb(227, 255, 250);
+	border: 2px solid green;
+	border-radius: 20px;
+}
+#registration_form div button:hover, #enter_form div button:hover{
+	background-color: rgb(237, 255, 171);
+	cursor: pointer;
+}
+#registration_form div button:active, #enter_form div button:active{
+	background-color: rgb(82, 225, 8);
+}
+#registration_form div input, #enter_form div input{
+	position: absolute;
+	right: 5%;
+	font-size: 20px;
+	width: 40%;
+	border: none;
+	padding:2px;
+	border-radius: 10px;
+}
+.close{
+	width: 25px;
+	height: 25px;
+	position: absolute;
+	background-image: url("../image_sources/close.png");
+	-webkit-background-size: 100%;
+	background-size: 100%;
+	-webkit-transform: rotate(45deg);
+	-moz-transform: rotate(45deg);
+	-ms-transform: rotate(45deg);
+	-o-transform: rotate(45deg);
+	transform: rotate(45deg);
+	top: 0;
+	right: 5px;
+}
+.close:hover{
+	width: 27px;
+	height: 27px;
+	position: absolute;
+	-webkit-background-size: 100%;
+	background-size: 100%;
+	-webkit-transform: rotate(45deg);
+	-moz-transform: rotate(45deg);
+	-ms-transform: rotate(45deg);
+	-o-transform: rotate(45deg);
+	transform: rotate(45deg);
+	top: -1px;
+	right: 4px;
+	cursor: pointer;
+}
+#back{
+	display: none;
+}

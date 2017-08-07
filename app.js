@@ -23,24 +23,21 @@ http.createServer(function(req, res) {
             auth.session(req, res);
             break;
         case '/error':
-            require('./modules/send')("html_sources/error.html", res);
+            require('./modules/send')("sources/html_sources/error.html", res, 'text/html');
             break;
-        case '/auth':
-            require('./modules/send')("html_sources/auth.html", res);
+        case '/start':
+            require('./modules/send')("sources/html_sources/index.html", res, 'text/html');
             break;
-        case '/auth/connect':
+        case '/start/a_connect':
             auth.salt(req, res);
             break;
-        case '/auth/enter':
+        case '/start/a_enter':
             auth.auth(req, res);
             break;
-        case '/reg':
-            require('./modules/send')("html_sources/register.html", res);
-            break;
-        case '/reg/connect':
+        case '/start/r_connect':
             reg.sendSalt(req, res);
             break;
-        case '/reg/enter':
+        case '/start/r_enter':
             reg.reg(req, res);
             break;
         case '/chat':
@@ -50,9 +47,10 @@ http.createServer(function(req, res) {
                     db.sessions.getSession(extra.parseCookies(req).sessionID)
                         .then(function(data) {
                             if (data) {
-                                require('./modules/send')("html_sources/chat.html",res);
+                                require('./modules/send')("sources/html_sources/chat.html",
+                                    res, 'text/html');
                             } else {
-                                res.writeHead(302, { Location: 'auth'});
+                                res.writeHead(302, { Location: 'start'});
                                 res.end();
                             }
                         })
@@ -80,7 +78,7 @@ http.createServer(function(req, res) {
             db.sessions.getSession(x.sessionID)
                 .then(function(data) {
                     if (data) {
-                        if (data.date - (new Date().getTime()) < 600000) {
+                        if (data.date - (new Date().getTime()) < 30000) {
 
                             db.sessions.addSession(x.login,
                                 new Date().getTime() + 86409000)
@@ -116,6 +114,46 @@ http.createServer(function(req, res) {
             break;
         case '/chat/publish':
             chat.publish(req, res);
+            chat.subscribe(req, res);
+            break;
+        case '/css_sources/style.css':
+            require('./modules/send')("sources/css_sources/style.css", res, 'text/css');
+            break;
+        case '/image_sources/letters/ch.png':
+            require('./modules/send')("sources/image_sources/letters/ch.png", res, 'image/png');
+            break;
+        case '/image_sources/letters/a.png':
+            require('./modules/send')("sources/image_sources/letters/a.png", res, 'image/png');
+            break;
+        case '/image_sources/letters/t.png':
+            require('./modules/send')("sources/image_sources/letters/t.png", res, 'image/png');
+            break;
+        case '/js_sources/start.js':
+            require('./modules/send')("sources/js_sources/start.js", res, 'text/javascript');
+            break;
+        case '/js_sources/chat.js':
+            require('./modules/send')("sources/js_sources/chat.js", res, 'text/javascript');
+            break;
+        case '/image_sources/clouds/sun.png':
+            require('./modules/send')("sources/image_sources/clouds/sun.png", res, 'image/png');
+            break;
+        case '/image_sources/clouds/cloud2.png':
+            require('./modules/send')("sources/image_sources/clouds/cloud2.png", res, 'image/png');
+            break;
+        case '/image_sources/clouds/cloud1.png':
+            require('./modules/send')("sources/image_sources/clouds/cloud1.png", res, 'image/png');
+            break;
+        case '/image_sources/grass/grass2.png':
+            require('./modules/send')("sources/image_sources/grass/grass2.png", res, 'image/png');
+            break;
+        case '/image_sources/cat/butterfly.png':
+            require('./modules/send')("sources/image_sources/cat/butterfly.png", res, 'image/png');
+            break;
+        case '/image_sources/close.png':
+            require('./modules/send')("sources/image_sources/close.png", res, 'image/png');
+            break;
+        case '/css_sources/chat.css':
+            require('./modules/send')("sources/css_sources/chat.css", res, 'text/css');
             break;
         default:
             //TODO: need to redirect to error.html, maybe
