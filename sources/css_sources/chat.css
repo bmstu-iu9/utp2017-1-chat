@@ -1,0 +1,136 @@
+*{
+	margin: 0;
+	padding: 0;
+}
+button::-moz-focus-inner,
+input[type="reset"]::-moz-focus-inner,
+input[type="button"]::-moz-focus-inner,
+input[type="submit"]::-moz-focus-inner,
+input[type="submit"]::-moz-focus-inner,
+input[type="file"] > input[type="button"]::-moz-focus-inner {/* */
+	border: none;
+}
+body{
+	background-color: rgb(140, 186, 243);
+}
+header div img {
+	display: inline-block;
+	margin-top: 2%;
+	margin-left: 2%;
+}
+header {
+	width: 100%;
+}
+#chat_form{
+	width: 95%;
+	margin: auto;
+	position: absolute;
+	top:10%;
+	bottom: 0;
+	right: 0;
+	left: 0;
+	height: 78%;
+	background-color: white;
+	border-radius: 40px;
+	overflow: hidden;
+	padding-top: 2%;
+	border: 5px solid green;
+	color: green;
+	font-family: "Courier", monospace;
+}
+#dialog{
+	width: 90%;
+	overflow-y: scroll;
+	height: 80%;
+	margin-left: auto;
+	margin-right: auto;
+}
+#menu{
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	height:18%;
+	background-color: green;
+}
+#out div, #send div{
+	position: absolute;
+	width: 100%;
+	height: 50%;
+	font-size: 3vh;
+	top:0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	margin: auto;
+}
+#out, #send{
+	text-align: center;
+	position: absolute;
+	width:25%;
+	height: 100%;
+	background-color: rgb(237, 255, 171);
+}
+
+
+#out:hover, #send:hover{
+	background-color: rgb(190, 247, 249);
+	color: rgb(2, 1, 161);
+	border-color: rgb(2, 1, 161);
+	cursor: pointer;
+}
+#out:active, #send:active{
+	background-color: rgb(140, 225, 255);
+}
+
+#out{
+	left: 0;
+}
+#send{
+	right:0;
+}
+#message{
+	display: block;
+	position: absolute;
+	width: 50%;
+	top:0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	margin: auto;
+	outline: none;
+	resize: none;
+	font-size: 15px;
+	overflow: auto;
+}
+.messages{
+	position: relative;
+	font-size: 20px;
+	width: 100%;
+	margin-bottom: 10px;
+}
+.login, .text_of_message, .date_time{
+	word-wrap: break-word;
+}
+.login{
+	width: 12%;
+	position: absolute;
+	left: 0;
+	top: 2px;
+	background-color: #8099ff;
+	border-radius: 10px;
+	color: white;
+	text-align: center;
+}
+.text_of_message{
+	width: 77%;
+	margin-left: 13%;
+	color: black;
+	font-family: "Courier", monospace;
+}
+.date_time{
+	position: absolute;
+	width: 8%;
+	right: 0;
+	top: 0;
+	color: grey;
+}
