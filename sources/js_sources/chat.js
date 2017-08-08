@@ -1,4 +1,5 @@
 window.onload = function() {
+    oldMessages();
     subscribe();
 
     document.getElementById("out").addEventListener("click", exit, false);
@@ -10,10 +11,12 @@ window.onload = function() {
 	}, false);
 };
 
+var room = 0; //stub
+
 function publish() {
     var xhr = new XMLHttpRequest();
 
-    xhr.open("POST", "chat/publish", true);
+    xhr.open("POST", "chat/room" + room + "/publish", true);
 
     var message = document.getElementById("message").value;
 
@@ -28,7 +31,7 @@ function publish() {
 function subscribe() {
     var xhr = new XMLHttpRequest();
 
-    xhr.open("POST", "chat/subscribe", true);
+    xhr.open("POST", "chat/room" + room + "/subscribe", true);
 
     xhr.onreadystatechange = function() {
         if (xhr.readyState == 4) {
@@ -56,10 +59,29 @@ function subscribe() {
     xhr.send('');
 }
 
+function oldMessages() {
+    var xhr = new XMLHttpRequest();
+
+    xhr.open("GET", "chat/room" + room + "/msg", true);
+    xhr.send();
+
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4) {
+            if (xhr.status == 200) {
+
+                JSON.parse(this.responseText).forEach(function(obj) {
+                    console.log(obj);
+                    get_message(obj);
+                });
+            }
+        }
+    };
+}
+
 function exit() {
     var xhr = new XMLHttpRequest();
 
-    xhr.open("POST", "chat/exit", true);
+    xhr.open("POST", "chat/room" + room + "/exit", true);
 
     xhr.send(); 
 
