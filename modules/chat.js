@@ -12,7 +12,12 @@ var clients = [];
  * Then, when some message gets to the server, all users
  * will catch it. (function "publish")
  */
-exports.subscribe = function(req, res) {
+/**
+ * @param req Request
+ * @param res Response
+ * @param room param for multiple rooms, now is disabled
+ */
+exports.subscribe = function(req, res, room) {
 
     clients.push(res);
 
@@ -22,7 +27,12 @@ exports.subscribe = function(req, res) {
 
 };
 
-exports.publish = function(req, res) {
+/**
+ * @param req Request
+ * @param res Response
+ * @param room param for multiple rooms, now is disabled
+ */
+exports.publish = function(req, res, room) {
 
     extra.safeRequest(req, res)
         .then(function (data) {
