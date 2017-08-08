@@ -51,25 +51,39 @@ http.createServer(function(req, res) {
         case '/chat':
             switch (urlLinks[1]) {
                 case '/':
-                    //if server don't contain sessionID, redirect to auth
-                    db.sessions.deleteOldSessions()
-                        .then(function(data) {
-                            db.sessions.getSession(extra.parseCookies(req).sessionID)
-                                .then(function(data) {
-                                    if (data) {
-                                        require('./modules/send')("sources/html_sources/chat.html",
-                                            res, 'text/html');
-                                    } else {
-                                        res.writeHead(302, { Location: 'start'});
-                                        res.end();
-                                    }
+                    chatShow(req, res, "/rooms.html");
+                    break;
+                case '/delete_room':
+                    extra.safeRequest(req, res)
+                        .then(function (data) {
+                            db.dialogs.deleteRoom(data.id)
+                                .then(function () {
+                                    res.end();
                                 })
                                 .catch(function (err) {
-                                    log.error("Error at app.js/chat/getSession:", err);
+                                    log.error('Error at app.js/chat/deleteRoom:', err);
                                 });
                         })
                         .catch(function (err) {
-                            log.error('Error at app.js/chat/deleteOldSessions:', err);
+                            log.error('Error at app.js/chat/deleteRoom:', err);
+                        });
+                    break;
+                case '/add_room':
+                    db.dialogs.addRoom(extra.parseCookies(req).login)
+                        .then(function (data) {
+                            res.end(data);
+                        })
+                        .catch(function (err) {
+                            log.error("Error at app.js/chat/addRoom:", err);
+                        });
+                    break;
+                case '/get_rooms':
+                    db.dialogs.getRooms()
+                        .then(function (data) {
+                            res.end(JSON.stringify(data));
+                        })
+                        .catch(function (err) {
+                            log.error("Error at app.js/chat/getRooms:", err);
                         });
                     break;
                 default:
@@ -77,6 +91,9 @@ http.createServer(function(req, res) {
                         var room = urlLinks[1].substr(5, urlLinks[1].length - 5);
 
                         switch (urlLinks[2]) {
+                            case '/':
+                                chatShow(req, res, "/chat.html");
+                                break;
                             case '/msg':
                                 db.dialogs.getMessages(room, 0, true)
                                     .then(function(data) {
@@ -84,7 +101,8 @@ http.createServer(function(req, res) {
                                         
                                     })
                                     .catch(function (err) {
-                                        log.error('Error at app.js/chat/msg/getMessages', err);
+                                        log.error('Error at app.js/chat/msg' +
+                                            '/getMessages', err);
                                     });
                                 break;
                             case '/exit':
@@ -167,6 +185,30 @@ http.createServer(function(req, res) {
                             defaultError(req, res);
                     }
                     break;
+                case '/error':
+                    switch (urlLinks[2]) {
+                        case '/0.png':
+                            require('./modules/send')
+                            ("sources/image_sources/error/0.png", res, 'image/png');
+                            break;
+                        case '/400.png':
+                            require('./modules/send')
+                            ("sources/image_sources/error/400.png", res, 'image/png');
+                            break;
+                        case '/403.jpg':
+                            require('./modules/send')
+                            ("sources/image_sources/error/403.png", res, 'image/jpg');
+                            break;
+                        case '/404.png':
+                            require('./modules/send')
+                            ("sources/image_sources/error/404.png", res, 'image/png');
+                            break;
+                        case '/502.jpg':
+                            require('./modules/send')
+                            ("sources/image_sources/error/502.png", res, 'image/jpg');
+                            break;
+                    }
+                    break;
                 case '/close.png':
                     require('./modules/send')
                     ("sources/image_sources/close.png", res, 'image/png');
@@ -185,6 +227,10 @@ http.createServer(function(req, res) {
                     require('./modules/send')
                     ("sources/css_sources/chat.css", res, 'text/css');
                     break;
+                case '/error.css':
+                    require('./modules/send')
+                    ("sources/css_sources/error.css", res, 'text/css');
+                    break;
                 default:
                     defaultError(req, res);
             }
@@ -198,6 +244,10 @@ http.createServer(function(req, res) {
                 case '/chat.js':
                     require('./modules/send')
                     ("sources/js_sources/chat.js", res, 'text/javascript');
+                    break;
+                case '/rooms.js':
+                    require('./modules/send')
+                    ("sources/js_sources/rooms.js", res, 'text/javascript');
                     break;
                 default:
                     defaultError(req, res);
@@ -261,8 +311,30 @@ function subscribeFunc(req, res, room) {
         });
 }
 
+function chatShow(req, res, path) {
+    //if server don't contain sessionID, redirect to auth
+    db.sessions.deleteOldSessions()
+        .then(function(data) {
+            db.sessions.getSession(extra.parseCookies(req).sessionID)
+                .then(function(data) {
+                    if (data) {
+                        require('./modules/send')
+                        ("sources/html_sources" + path, res, 'text/html');
+                    } else {
+                        res.writeHead(302, { Location: '/'});
+                        res.end();
+                    }
+                })
+                .catch(function (err) {
+                    log.error("Error at app.js/chat/getSession:", err);
+                });
+        })
+        .catch(function (err) {
+            log.error('Error at app.js/chat/deleteOldSessions:', err);
+        });
+}
+
 function defaultError(req, res) {
-    //TODO: need to redirect to error.html, maybe
     res.statusCode = 404;
     res.end("Page not found");
     log.error("default case in rooter", req.url);

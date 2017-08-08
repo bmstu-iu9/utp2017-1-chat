@@ -54,7 +54,7 @@ function registration() {
                             //TODO: show message about incorrect login or password
 
                         } else {
-                            window.location.replace(origin + '/error');
+                            window.location.replace(origin + '/error' + err1);
                         }
                     });
             })
