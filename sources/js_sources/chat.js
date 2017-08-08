@@ -16,9 +16,9 @@ var room = 0; //stub
 function publish() {
     var xhr = new XMLHttpRequest();
 
-    xhr.open("POST", "chat/room" + room + "/publish", true);
+    xhr.open("POST", window.location.pathname + "/publish", true);
 
-    var message = document.getElementById("message").value;
+    var message = document.getElementById("message").value.trim();
 
     if (message != "")
         xhr.send(JSON.stringify({message: message}));
@@ -31,7 +31,7 @@ function publish() {
 function subscribe() {
     var xhr = new XMLHttpRequest();
 
-    xhr.open("POST", "chat/room" + room + "/subscribe", true);
+    xhr.open("POST", window.location.pathname + "/subscribe", true);
 
     xhr.onreadystatechange = function() {
         if (xhr.readyState == 4) {
@@ -62,7 +62,7 @@ function subscribe() {
 function oldMessages() {
     var xhr = new XMLHttpRequest();
 
-    xhr.open("GET", "chat/room" + room + "/msg", true);
+    xhr.open("GET", window.location.pathname + "/msg", true);
     xhr.send();
 
     xhr.onreadystatechange = function() {
@@ -70,8 +70,8 @@ function oldMessages() {
             if (xhr.status == 200) {
 
                 JSON.parse(this.responseText).forEach(function(obj) {
-                    console.log(obj);
                     get_message(obj);
+
                 });
             }
         }
@@ -81,7 +81,7 @@ function oldMessages() {
 function exit() {
     var xhr = new XMLHttpRequest();
 
-    xhr.open("POST", "chat/room" + room + "/exit", true);
+    xhr.open("POST", window.location.pathname + "/exit", true);
 
     xhr.send(); 
 

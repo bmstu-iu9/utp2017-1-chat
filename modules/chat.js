@@ -2,7 +2,7 @@ var log = require('tech').log;
 var extra = require('./extra');
 var db = require('db');
 
-var clients = [];
+var rooms = [];
 
 /**
  * Long-polling mechanism.
@@ -19,10 +19,15 @@ var clients = [];
  */
 exports.subscribe = function(req, res, room) {
 
-    clients.push(res);
+    if (rooms[room])
+        rooms[room].push(res);
+    else {
+        rooms[room] = [];
+        rooms[room].push(res);
+    }
 
     res.on('close', function() {
-        clients.splice(clients.indexOf(res), 1);
+        rooms[room].splice(rooms[room].indexOf(res), 1);
     });
 
 };
@@ -40,14 +45,14 @@ exports.publish = function(req, res, room) {
             var name = require('./extra').parseCookies(req).login;
             var time = (new Date(new Date().getTime()).toLocaleTimeString());
 
-            db.dialogs.addMessage('0', name, data.message, time)
+            db.dialogs.addMessage(room, name, data.message, time)
                 .then(function (data1) {
-                    clients.forEach(function(res) {
+                    rooms[room].forEach(function(res) {
                         res.end(JSON.stringify({login: name,
                             message: data.message, date: time}));
                     });
 
-                    clients = [];
+                    rooms[room] = [];
                 })
                 .catch(function (err) {
                     log.error(err);
