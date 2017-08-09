@@ -63,3 +63,7 @@ exports.publish = function(req, res, room) {
 
         });
 };
+
+exports.getUsersInRoom = function (id) {
+    return rooms[id];
+};

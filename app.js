@@ -56,7 +56,7 @@ http.createServer(function(req, res) {
                 case '/delete_room':
                     extra.safeRequest(req, res)
                         .then(function (data) {
-                            db.dialogs.deleteRoom(data.id)
+                            db.dialogs.deleteRoom(JSON.parse(data.id))
                                 .then(function () {
                                     res.end();
                                 })
@@ -86,6 +86,35 @@ http.createServer(function(req, res) {
                             log.error("Error at app.js/chat/getRooms:", err);
                         });
                     break;
+                case '/redirect':
+                    extra.safeRequest(req, res)
+                        .then(function (data) {
+                            db.dialogs.containRoom(data)
+                                .then(function (data1) {
+                                    if (data1 != -1) {
+                                        res.end();
+                                    } else {
+                                        res.end("No such room");
+                                    }
+                                })
+                                .catch(function (err) {
+                                    log.error("Error at app.js/chat/redirect:", err);
+                                });
+                        })
+                        .catch(function (err) {
+                            log.error("Error at app.js/chat/redirect:", err);
+                        });
+                    break;
+                case '/exit':
+                    db.sessions.deleteSession(extra.parseCookies(req).sessionID)
+                        .then(function (data) {
+                            res.writeHead(302, { Location: '' });
+                            res.end();
+                        })
+                        .catch(function (err) {
+                            log.error("Error at app.js/chat/deleteSession", err);
+                        });
+                    break;
                 default:
                     if (urlLinks[1].substr(0, 5) == '/room') {
                         var room = urlLinks[1].substr(5, urlLinks[1].length - 5);
@@ -106,14 +135,8 @@ http.createServer(function(req, res) {
                                     });
                                 break;
                             case '/exit':
-                                db.sessions.deleteSession(extra.parseCookies(req).sessionID)
-                                    .then(function (data) {
-                                        res.writeHead(302, { Location: ''});
-                                        res.end();
-                                    })
-                                    .catch(function (err) {
-                                        log.error("Error at app.js/chat/deleteSession", err);
-                                    });
+                                res.writeHead(302, { Location: '' });
+                                res.end();
                                 break;
                             case '/subscribe':
                                 subscribeFunc(req, res, room);
