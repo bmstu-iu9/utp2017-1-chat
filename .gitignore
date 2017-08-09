@@ -2,3 +2,5 @@
 /node_modules/db/Sessions/sessions.json
 /node_modules/db/Users/users.json
 /node_modules/db/Dialogs/dialogs.json
+/sources/.DS_Store/.DS_Store
+/.DS_Store/.DS_Store
