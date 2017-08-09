@@ -1,49 +1,28 @@
 window.onload = function() {
     loadRooms();
 
+    document.getElementById("exit").addEventListener("click", exit, false);
     document.getElementById("addRoom").addEventListener("click", addRoom, false);
 };
 
 function addRoom() {
     xhrAddRoom()
         .then(function (data) {
-            showRoom(JSON.parse(data));
+            reshowRooms();
         })
         .catch(function (err) {
-            window.location.replace(window.location.origin + '/error');
+            window.location.replace(window.location.origin + '/error' + err);
         });
 }
 
 function deleteRoom(id) {
     xhrDeleteRoom(id)
         .then(function (data) {
-            unshowRoom(); //TODO
+            reshowRooms();
         })
         .catch(function (err) {
-            window.location.replace(window.location.origin + '/error');
+            window.location.replace(window.location.origin + '/error' + err);
         });
-}
-
-function xhrDeleteRoom(id) {
-    return new Promise(function(response, reject) {
-        var xhr = new XMLHttpRequest();
-
-        xhr.open("POST", '/chat/delete_room', true);
-
-        xhr.send(id);
-
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState == 4) {
-                if (xhr.status == 200) {
-                    response(this.responseText);
-
-                } else {
-                    reject(xhr.status);
-
-                }
-            }
-        };
-    })
 }
 
 function loadRooms() {
@@ -54,9 +33,90 @@ function loadRooms() {
             });
         })
         .catch(function (err) {
-            console.log(err);
-            //window.location.replace(window.location.origin + '/error');
+            window.location.replace(window.location.origin + '/error' + err);
         });
+}
+
+function showRoom(data) {
+    var divLine = document.createElement('div');
+    divLine.className = 'line';
+    var divRoom = document.createElement('div');
+    divRoom.className = 'room';
+
+    divRoom.addEventListener('click', function () {
+        goToRoom(data.id);
+    }, false);
+
+    if (data.author == getCookieValue("login")) {
+        var divDelete = document.createElement('div');
+        divDelete.className = 'delete';
+        divDelete.addEventListener('click', function() {
+            deleteRoom(data.id);
+        }, false);
+    }
+
+    divRoom.appendChild(document.createTextNode(data.id));
+    divLine.appendChild(divRoom);
+
+    if (data.author == getCookieValue("login")) {
+        divDelete.appendChild(document.createTextNode("Delete room"));
+        divLine.appendChild(divDelete);
+    }
+
+    document.getElementById("rooms").appendChild(divLine);
+}
+
+function reshowRooms() {
+    var rooms = document.getElementById("rooms");
+    while (rooms.firstChild) {
+        rooms.removeChild(rooms.firstChild);
+    }
+
+    loadRooms();
+}
+
+function goToRoom(id) {
+    var xhr = new XMLHttpRequest();
+
+    xhr.open("POST", '/chat/redirect', true);
+
+    xhr.send(id);
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4) {
+            if (xhr.status == 200) {
+                if (this.responseText == '')
+                    window.location.replace('/chat/room' + id);
+                else
+                    reshowRooms();
+            } else {
+                window.location.replace(window.location.origin + '/error'
+                    + xhr.statusCode);
+
+            }
+        }
+    };
+}
+
+function exit() {
+    var xhr = new XMLHttpRequest();
+
+    xhr.open("POST", '/chat/exit', true);
+
+    xhr.send();
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4) {
+            if (xhr.status == 302) {
+                window.location.replace(window.location.origin
+                    + xhr.getResponseHeader('Location'));
+
+            } else if (xhr.status != 200){
+                window.location.replace(window.location.origin + '/error'
+                    + xhr.statusCode);
+            }
+        }
+    };
 }
 
 function xhrAddRoom() {
@@ -107,35 +167,26 @@ function xhrLoadRoom() {
     })
 }
 
-function showRoom(data) {
-    var divLine = document.createElement('div');
-    divLine.className = 'line';
-    var divRoom = document.createElement('div');
-    divRoom.className = 'room';
+function xhrDeleteRoom(id) {
+    return new Promise(function(response, reject) {
+        var xhr = new XMLHttpRequest();
 
-    divRoom.addEventListener('click', function () {
-        window.location.replace('/chat/room' + data.id);
-    }, false);
+        xhr.open("POST", '/chat/delete_room', true);
 
-    if (data.author == getCookieValue("login")) {
-        var divDelete = document.createElement('div');
-        divDelete.className = 'delete';
-        //divDelete.addEventListener('click', deleteRoom, false);
-    }
+        xhr.send(JSON.stringify({ id: id }));
 
-    divRoom.appendChild(document.createTextNode(data.id));
-    divLine.appendChild(divRoom);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+                if (xhr.status == 200) {
+                    response(this.responseText);
 
-    if (data.author == getCookieValue("login")) {
-        divDelete.appendChild(document.createTextNode("Delete room"));
-        divLine.appendChild(divDelete);
-    }
+                } else {
+                    reject(xhr.status);
 
-    document.getElementById("rooms").appendChild(divLine);
-}
-
-function unshowRoom() {
-
+                }
+            }
+        };
+    })
 }
 
 function getCookieValue(a) {

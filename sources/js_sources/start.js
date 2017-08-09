@@ -59,7 +59,7 @@ function registration() {
                     });
             })
             .catch(function(err) {
-                window.location.replace(origin + '/error');
+                window.location.replace(origin + '/error' + err);
             });
     } else {
         document.getElementById("password").value = "";
@@ -161,14 +161,14 @@ function authentication() {
 
 
                         } else {
-                            window.location.replace(origin + '/error');
+                            window.location.replace(origin + '/error'  + err1);
 
                         }
                     })
             }
         })
         .catch(function(err) {
-            window.location.replace(origin + '/error');
+            window.location.replace(origin + '/error' + err);
         });
 }
 

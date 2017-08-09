@@ -73,6 +73,9 @@ function oldMessages() {
                     get_message(obj);
 
                 });
+            } else if (xhr.status != 200){
+                window.location.replace(window.location.origin + '/error'
+                    + xhr.statusCode);
             }
         }
     };
@@ -91,8 +94,9 @@ function exit() {
                 window.location.replace(window.location.origin
                     + xhr.getResponseHeader('Location'));
 
-            } else {
-                console.log(xhr.status)
+            } else if (xhr.status != 200){
+                window.location.replace(window.location.origin + '/error'
+                    + xhr.statusCode);
             }
         }
     }
