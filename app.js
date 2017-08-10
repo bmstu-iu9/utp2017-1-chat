@@ -315,8 +315,8 @@ function subscribeFunc(req, res, room) {
                             db.sessions.deleteSession(p.sessionID)
                                 .then(function (data1) {
 
-                                    var s = 'sessionID=' + data + '; Path=/; Secure; HttpOnly';
-                                    var s1 = 'login=' + p.login + '; Path=/; Secure; HttpOnly';
+                                    var s = 'sessionID=' + data + '; Path=/; Secure';
+                                    var s1 = 'login=' + p.login + '; Path=/; Secure';
 
                                     res.writeHead(200, {
                                         'Set-Cookie': [s, s1]
