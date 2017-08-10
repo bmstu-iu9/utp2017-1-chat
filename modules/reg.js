@@ -24,8 +24,8 @@ exports.reg = function(req, res) {
                             console.log(forge.pki.rsa.decrypt(data, keys.publicKey, true, false));
                             var key = forge.pki.publicKeyToPem(keys.publicKey);*/
 
-                            var s = 'sessionID=' + data + '; Path=/; Secure; HttpOnly';
-                            var s1 = 'login=' + body.login + '; Path=/; Secure; HttpOnly';
+                            var s = 'sessionID=' + data + '; Path=/; Secure';
+                            var s1 = 'login=' + body.login + '; Path=/; Secure';
 
                             res.writeHead(200, {
                                 'Set-Cookie': [s, s1]
