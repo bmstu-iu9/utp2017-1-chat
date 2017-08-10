@@ -1,4 +1,6 @@
 var http = require('http');
+var https = require('https');
+var fs = require('fs');
 
 var chat = require('./modules/chat');
 var auth = require('./modules/auth');
@@ -16,7 +18,12 @@ db.sessions.connect();
 db.users.connect();
 db.dialogs.connect();
 
-http.createServer(function(req, res) {
+var options = {
+    key: fs.readFileSync('keys/key.pem'),
+    cert: fs.readFileSync('keys/cert.pem')
+};
+
+https.createServer(options, function(req, res) {
     var urlLinks = parse(req.url);
 
     switch (urlLinks[0]) {
@@ -279,7 +286,7 @@ http.createServer(function(req, res) {
         default:
             defaultError(req, res);
     }
-}).listen(8080);
+}).listen(4433);
 
 function parse(url) {
     var x = [];
@@ -308,8 +315,8 @@ function subscribeFunc(req, res, room) {
                             db.sessions.deleteSession(p.sessionID)
                                 .then(function (data1) {
 
-                                    var s = 'sessionID=' + data + '; Path=/';
-                                    var s1 = 'login=' + p.login + '; Path=/';
+                                    var s = 'sessionID=' + data + '; Path=/; Secure; HttpOnly';
+                                    var s1 = 'login=' + p.login + '; Path=/; Secure; HttpOnly';
 
                                     res.writeHead(200, {
                                         'Set-Cookie': [s, s1]
