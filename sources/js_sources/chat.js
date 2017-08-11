@@ -16,9 +16,18 @@ var room = 0; //stub
 function publish() {
     var xhr = new XMLHttpRequest();
 
-    xhr.open("POST", window.location.pathname + "/publish", true);
-
     var message = document.getElementById("message").value.trim();
+
+    if (document.getElementById("inputFileToLoad").files[0]) {
+        //TODO check size and format
+        var id = Date.now();
+        xhr.open("POST", window.location.pathname + "/sendimage/" + id, true);
+        var formData = new FormData();
+        formData.append(id.toString(), document.getElementById("inputFileToLoad").files[0]);
+        xhr.send(formData);
+    }
+
+    xhr.open("POST", window.location.pathname + "/publish", true);
 
     if (message != "")
         xhr.send(JSON.stringify({message: message}));
@@ -125,5 +134,23 @@ function get_message(message){
         divMessage.appendChild(divDate);
 
         document.getElementById("dialog").appendChild(divMessage);
+
+        if(message.attachment){
+            xhr.open("GET", window.location.pathname + "/image" + message.attachment, true);
+            xhr.send();
+
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4) {
+                    if (xhr.status == 200) {
+
+                        log.debug(JSON.parse(this.responseText));
+
+                    } else if (xhr.status != 200){
+                        window.location.replace(window.location.origin + '/error'
+                            + xhr.statusCode);
+                    }
+                }
+            };
+        }
     }
 }

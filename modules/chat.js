@@ -47,11 +47,21 @@ exports.publish = function(req, res, room) {
 
             db.dialogs.addMessage(room, name, data.message, time)
                 .then(function (data1) {
-                    rooms[room].forEach(function(res) {
-                        res.end(JSON.stringify({login: name,
-                            message: data.message, date: time}));
-                    });
-
+                    if (data.attachment) {
+                        rooms[room].forEach(function (res) {
+                            res.end(JSON.stringify({
+                                login: name,
+                                message: data.message,  attachment: data.attachment, date: time
+                            }));
+                        });
+                    } else {
+                        rooms[room].forEach(function (res) {
+                            res.end(JSON.stringify({
+                                login: name,
+                                message: data.message, date: time
+                            }));
+                        });
+                    }
                     rooms[room] = [];
                 })
                 .catch(function (err) {
@@ -66,4 +76,24 @@ exports.publish = function(req, res, room) {
 
 exports.getUsersInRoom = function (id) {
     return rooms[id];
+};
+
+exports.saveImage = function (req, res, room) {
+
+    //TODO
+
+    extra.safeImageRequest(req, res)
+        .then(function (image) {
+
+            var name = require('./extra').parseCookies(req).login;
+            var time = (new Date(new Date().getTime()).toLocaleTimeString());
+            //saving image?????
+            log.debug(image.slice(0, 300));
+            require('fs').writeFile('./lol.png', image, function (err) {
+                if(err)
+                    console.log('NNOOOOOOOOOOOO   '+err); //TODO
+            });
+            log.debug("SAVED????");
+
+        })
 };
