@@ -14,43 +14,57 @@ window.onload = function() {
 var room = 0; //stub
 
 function publish() {
-
     var message = document.getElementById("message").value.trim();
 
-    var attachment;
+    var inputFileToLoad = document.getElementById("inputFileToLoad").files[0];
 
-    if (document.getElementById("inputFileToLoad").files[0]) {
+    if (inputFileToLoad) {
         //TODO check size and format
+
+        if(inputFileToLoad.size > 16000000) {
+            //TODO сообщать пользователю, что файл слишком большой
+            alert("Your file is too large");
+            return false;
+        }
 
         var fileReader = new FileReader();
 
         fileReader.addEventListener("load", function() {
-            attachment = fileReader.result.split("base64,")[1];
+            var attachment = fileReader.result.split("base64,")[1];
+
             var xhr = new XMLHttpRequest();
 
             xhr.open("POST", window.location.pathname + "/publish", true);
 
-            if (attachment) {
-                xhr.send(JSON.stringify({message: message, attachment: attachment}));
-            } else if (message != "")
-                xhr.send(JSON.stringify({message: message}));
+            xhr.send(JSON.stringify({message: message, attachment: attachment}));
 
             document.getElementById("message").value = "";
 
-            return false;// <--- data: base64
         });
-        fileReader.readAsDataURL(document.getElementById("inputFileToLoad").files[0]);
-        return false;
+
+        fileReader.readAsDataURL(inputFileToLoad);
+
+        var oldInput = document.getElementById("inputFileToLoad")
+
+        var newInput = document.createElement("input");
+
+        newInput.type = oldInput.type;
+        newInput.accept = oldInput.accept;
+        newInput.id = oldInput.id;
+
+        oldInput.parentNode.replaceChild(newInput, oldInput);
+
+    } else {
+
+        var xhr = new XMLHttpRequest();
+
+        xhr.open("POST", window.location.pathname + "/publish", true);
+
+        if (message != "")
+            xhr.send(JSON.stringify({message: message}));
+
+        document.getElementById("message").value = "";
     }
-
-    var xhr = new XMLHttpRequest();
-
-    xhr.open("POST", window.location.pathname + "/publish", true);
-
-    if (message != "")
-        xhr.send(JSON.stringify({message: message}));
-
-    document.getElementById("message").value = "";
 
     return false;
 }
@@ -147,8 +161,7 @@ function get_message(message){
 
 
         if(message.attachment){
-            var oImg = document.createElement("img");
-            alert(window.location.pathname + "/image/" + message.attachment);                        //TODO FRONTEND
+            var oImg = document.createElement("img");                      //TODO FRONTEND
             oImg.setAttribute('src', window.location.pathname + "/image/" + message.attachment);
             divMessage.appendChild(oImg);
         }
