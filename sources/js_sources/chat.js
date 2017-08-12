@@ -19,7 +19,6 @@ function publish() {
     var inputFileToLoad = document.getElementById("inputFileToLoad").files[0];
 
     if (inputFileToLoad) {
-        //TODO check size and format
 
         if(inputFileToLoad.size > 16000000) {
             //TODO сообщать пользователю, что файл слишком большой
@@ -27,7 +26,7 @@ function publish() {
             return false;
         }
 
-        var fileReader = new FileReader();
+        var fileReader = new FileReader(); //эта штука может подгружать миниатюры! Для фронтенда это можнт быть полезно
 
         fileReader.addEventListener("load", function() {
             var attachment = fileReader.result.split("base64,")[1];
