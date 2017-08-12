@@ -159,6 +159,9 @@ https.createServer(options, function(req, res) {
                             default:
                                 if(urlLinks[2].substr(0, 6) == '/image') {
                                     //TODO
+                                    log.debug(urlLinks);
+                                    require('./modules/send')
+                                    ("./temp"+urlLinks[3]+'.png', res, 'image/png');
                                     log.debug("GET image "+urlLinks[3]);
                                 }
                         }

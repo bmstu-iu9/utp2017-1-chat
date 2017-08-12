@@ -44,14 +44,19 @@ exports.publish = function(req, res, room) {
 
             var name = require('./extra').parseCookies(req).login;
             var time = (new Date(new Date().getTime()).toLocaleTimeString());
+            if (data.attachment){
+                data.id = name+Date.now();
+                saveImage(data.attachment, data.id);
+                delete data.attachment;
+            }
 
-            db.dialogs.addMessage(room, name, data.message, time)
+            db.dialogs.addMessage(room, name, data.message, time, data.id)
                 .then(function (data1) {
-                    if (data.attachment) {
+                    if (data.id) {
                         rooms[room].forEach(function (res) {
                             res.end(JSON.stringify({
                                 login: name,
-                                message: data.message,  attachment: data.attachment, date: time
+                                message: data.message,  attachment: data.id, date: time
                             }));
                         });
                     } else {
@@ -78,22 +83,12 @@ exports.getUsersInRoom = function (id) {
     return rooms[id];
 };
 
-exports.saveImage = function (req, res, room) {
+var saveImage = function (image, id) {
+    var fs = require('fs');
+    fs.mkdir("./temp", function () {
+        fs.writeFile('./temp/' + id + '.png', Buffer(image, 'Base64'),  function (err) {
+            if(err) log.error("chat.js/saveImage: " + err);
+        });
+    });
 
-    //TODO
-
-    extra.safeImageRequest(req, res)
-        .then(function (image) {
-
-            var name = require('./extra').parseCookies(req).login;
-            var time = (new Date(new Date().getTime()).toLocaleTimeString());
-            //saving image?????
-            log.debug(image);
-            require('fs').writeFile('./lol.png', Buffer(image, 'Base64'),  function (err) {
-                if(err)
-                    console.log('NNOOOOOOOOOOOO   '+err); //TODO
-            });
-            log.debug("SAVED????");
-
-        })
 };

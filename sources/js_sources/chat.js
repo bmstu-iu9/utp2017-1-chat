@@ -17,20 +17,30 @@ function publish() {
 
     var message = document.getElementById("message").value.trim();
 
+    var attachment;
+
     if (document.getElementById("inputFileToLoad").files[0]) {
         //TODO check size and format
-        var xhr = new XMLHttpRequest();
 
         var fileReader = new FileReader();
 
         fileReader.addEventListener("load", function() {
-            var srcData = fileReader.result.split("base64,")[1]; // <--- data: base64
-            var id = Date.now();
-            xhr.open("POST", window.location.pathname + "/sendimage/" + id, true);
-            xhr.send(srcData);
+            attachment = fileReader.result.split("base64,")[1];
+            var xhr = new XMLHttpRequest();
+
+            xhr.open("POST", window.location.pathname + "/publish", true);
+
+            if (attachment) {
+                xhr.send(JSON.stringify({message: message, attachment: attachment}));
+            } else if (message != "")
+                xhr.send(JSON.stringify({message: message}));
+
+            document.getElementById("message").value = "";
+
+            return false;// <--- data: base64
         });
         fileReader.readAsDataURL(document.getElementById("inputFileToLoad").files[0]);
-
+        return false;
     }
 
     var xhr = new XMLHttpRequest();
@@ -122,7 +132,7 @@ function exit() {
 function get_message(message){
     var text = message.message;
 
-    if (text != ""){
+    if (text != "" || message.attachment){
 
         var divMessage = document.createElement('div');
         divMessage.className = 'messages';
@@ -135,6 +145,13 @@ function get_message(message){
 
         divText.innerHTML = text.replace(/([^>])\n/g, '$1<br/>');
 
+
+        if(message.attachment){
+            var oImg = document.createElement("img");
+            alert(window.location.pathname + "/image/" + message.attachment);                        //TODO FRONTEND
+            oImg.setAttribute('src', window.location.pathname + "/image/" + message.attachment);
+            divMessage.appendChild(oImg);
+        }
         divDate.appendChild(document.createTextNode(message.date));
         divLogin.appendChild(document.createTextNode(message.login));
         divMessage.appendChild(divLogin);
@@ -143,22 +160,5 @@ function get_message(message){
 
         document.getElementById("dialog").appendChild(divMessage);
 
-        if(message.attachment){
-            xhr.open("GET", window.location.pathname + "/image" + message.attachment, true);
-            xhr.send();
-
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState == 4) {
-                    if (xhr.status == 200) {
-
-                        log.debug(JSON.parse(this.responseText));
-
-                    } else if (xhr.status != 200){
-                        window.location.replace(window.location.origin + '/error'
-                            + xhr.statusCode);
-                    }
-                }
-            };
-        }
     }
 }
