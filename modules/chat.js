@@ -88,8 +88,8 @@ exports.saveImage = function (req, res, room) {
             var name = require('./extra').parseCookies(req).login;
             var time = (new Date(new Date().getTime()).toLocaleTimeString());
             //saving image?????
-            log.debug(image.slice(0, 300));
-            require('fs').writeFile('./lol.png', image, function (err) {
+            log.debug(image);
+            require('fs').writeFile('./lol.png', Buffer(image, 'Base64'),  function (err) {
                 if(err)
                     console.log('NNOOOOOOOOOOOO   '+err); //TODO
             });

@@ -14,18 +14,26 @@ window.onload = function() {
 var room = 0; //stub
 
 function publish() {
-    var xhr = new XMLHttpRequest();
 
     var message = document.getElementById("message").value.trim();
 
     if (document.getElementById("inputFileToLoad").files[0]) {
         //TODO check size and format
-        var id = Date.now();
-        xhr.open("POST", window.location.pathname + "/sendimage/" + id, true);
-        var formData = new FormData();
-        formData.append(id.toString(), document.getElementById("inputFileToLoad").files[0]);
-        xhr.send(formData);
+        var xhr = new XMLHttpRequest();
+
+        var fileReader = new FileReader();
+
+        fileReader.addEventListener("load", function() {
+            var srcData = fileReader.result.split("base64,")[1]; // <--- data: base64
+            var id = Date.now();
+            xhr.open("POST", window.location.pathname + "/sendimage/" + id, true);
+            xhr.send(srcData);
+        });
+        fileReader.readAsDataURL(document.getElementById("inputFileToLoad").files[0]);
+
     }
+
+    var xhr = new XMLHttpRequest();
 
     xhr.open("POST", window.location.pathname + "/publish", true);
 
