@@ -44,14 +44,29 @@ exports.publish = function(req, res, room) {
 
             var name = require('./extra').parseCookies(req).login;
             var time = (new Date(new Date().getTime()).toLocaleTimeString());
+            if (data.attachment){
+                data.id = name+Date.now();
+                saveImage(data.attachment, data.id);
+                delete data.attachment;
+            }
 
-            db.dialogs.addMessage(room, name, data.message, time)
+            db.dialogs.addMessage(room, name, data.message, time, data.id)
                 .then(function (data1) {
-                    rooms[room].forEach(function(res) {
-                        res.end(JSON.stringify({login: name,
-                            message: data.message, date: time}));
-                    });
-
+                    if (data.id) {
+                        rooms[room].forEach(function (res) {
+                            res.end(JSON.stringify({
+                                login: name,
+                                message: data.message,  attachment: data.id, date: time
+                            }));
+                        });
+                    } else {
+                        rooms[room].forEach(function (res) {
+                            res.end(JSON.stringify({
+                                login: name,
+                                message: data.message, date: time
+                            }));
+                        });
+                    }
                     rooms[room] = [];
                 })
                 .catch(function (err) {
@@ -66,4 +81,14 @@ exports.publish = function(req, res, room) {
 
 exports.getUsersInRoom = function (id) {
     return rooms[id];
+};
+
+var saveImage = function (image, id) {
+    var fs = require('fs');
+    fs.mkdir("./temp", function () {
+        fs.writeFile('./temp/' + id + '.png', Buffer(image, 'Base64'),  function (err) {
+            if(err) log.error("chat.js/saveImage: " + err);
+        });
+    });
+
 };
