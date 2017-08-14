@@ -1,9 +1,30 @@
 window.onload = function() {
     loadRooms();
+    getNews();
 
+    document.getElementById("user").textContent = "Login: " + getCookieValue("login");
     document.getElementById("exit").addEventListener("click", exit, false);
     document.getElementById("addRoom").addEventListener("click", addRoom, false);
 };
+
+function getNews() {
+    xhrGetNews()
+        .then(function (data) {
+            data = JSON.parse(data);
+
+            if (data.length != 0) {
+                var divNews = document.createElement('div');
+                divNews.className = 'news';
+
+                divNews.appendChild(document.createTextNode(data.text));
+
+                document.getElementById("nList").appendChild(divNews);
+            }
+        })
+        .catch(function (err) {
+            window.location.replace(window.location.origin + '/error' + err);
+        });
+}
 
 function addRoom() {
     xhrAddRoom()
@@ -117,6 +138,30 @@ function exit() {
             }
         }
     };
+}
+
+
+
+function xhrGetNews() {
+    return new Promise(function(response, reject) {
+        var xhr = new XMLHttpRequest();
+
+        xhr.open("POST", '/chat/news', true);
+
+        xhr.send();
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+                if (xhr.status == 200) {
+                    response(this.responseText);
+
+                } else {
+                    reject(xhr.status);
+
+                }
+            }
+        };
+    })
 }
 
 function xhrAddRoom() {

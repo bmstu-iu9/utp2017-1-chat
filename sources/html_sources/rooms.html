@@ -2,14 +2,22 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link href="../css_sources/rooms.css" rel="stylesheet">
 </head>
 <body>
     <script src="../js_sources/rooms.js"></script>
-    <div>
-        <button id="addRoom">Add Room</button>
-        <button id="exit">Exit</button>
+    <div id="container">
+        <div id="cHeader">
+            <div id="user">User</div>
+            <div id="exit">Exit</div>
+            <div id="addRoom">Add Room</div>
+        </div>
+        <div id="rooms"></div>
     </div>
-    <div id="rooms"></div>
+    <div id="news">
+        <div id="header">News</div>
+        <div id="nList"></div>
+    </div>
     <noscript>
         &lt;div id="no_js_box"&gt;&lt;h2&gt;Ваш браузер не поддерживает JavaScript.&lt;/h2&gt;&lt;p&gt;Включите поддержку JavaScript в вашем браузере или установите браузер с поддержкой JavaScript.&lt;/p&gt;&lt;/div&gt;
     </noscript>

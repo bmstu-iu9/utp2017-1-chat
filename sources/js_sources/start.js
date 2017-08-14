@@ -159,7 +159,6 @@ function authentication() {
                             document.getElementById("password1").value = "";
                             //TODO: show message about incorrect login or password
 
-
                         } else {
                             window.location.replace(origin + '/error'  + err1);
 
