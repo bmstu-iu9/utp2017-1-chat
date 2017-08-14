@@ -60,6 +60,15 @@ https.createServer(options, function(req, res) {
                 case '/':
                     chatShow(req, res, "/rooms.html");
                     break;
+                case '/news':
+                    db.dialogs.getNews()
+                        .then(function (data) {
+                            res.end(JSON.stringify(data));
+                        })
+                        .catch(function (err) {
+                            log.error('Error at app.js/chat/getNews:', err);
+                        });
+                    break;
                 case '/delete_room':
                     extra.safeRequest(req, res)
                         .then(function (data) {
@@ -264,6 +273,10 @@ https.createServer(options, function(req, res) {
                 case '/error.css':
                     require('./modules/send')
                     ("sources/css_sources/error.css", res, 'text/css');
+                    break;
+                case '/rooms.css':
+                    require('./modules/send')
+                    ("sources/css_sources/rooms.css", res, 'text/css');
                     break;
                 default:
                     defaultError(req, res);
