@@ -2,7 +2,7 @@ window.onload = function() {
     loadRooms();
     getNews();
 
-    document.getElementById("user").textContent = "Login: " + getCookieValue("login");
+    document.getElementById("user").textContent = "Логин: " + getCookieValue("login");
     document.getElementById("exit").addEventListener("click", exit, false);
     document.getElementById("addRoom").addEventListener("click", addRoom, false);
 };
@@ -80,7 +80,7 @@ function showRoom(data) {
     divLine.appendChild(divRoom);
 
     if (data.author == getCookieValue("login")) {
-        divDelete.appendChild(document.createTextNode("Delete room"));
+        divDelete.appendChild(document.createTextNode("Удалить комнату"));
         divLine.appendChild(divDelete);
     }
 
