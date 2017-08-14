@@ -125,7 +125,6 @@ https.createServer(options, function(req, res) {
                 default:
                     if (urlLinks[1].substr(0, 5) == '/room') {
                         var room = urlLinks[1].substr(5, urlLinks[1].length - 5);
-
                         switch (urlLinks[2]) {
                             case '/':
                                 chatShow(req, res, "/chat.html");
@@ -152,6 +151,11 @@ https.createServer(options, function(req, res) {
                                 chat.publish(req, res, room);
                                 chat.subscribe(req, res, room);
                                 break;
+                            default:
+                                if(urlLinks[2].substr(0, 6) == '/image') {
+                                    require('./modules/send')
+                                    ("./temp"+urlLinks[3]+'.png', res, 'image/png');
+                                }
                         }
                     } else
                         defaultError(req, res);
