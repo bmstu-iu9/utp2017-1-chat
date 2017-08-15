@@ -19,8 +19,7 @@ function publish() {
     var inputFileToLoad = document.getElementById("inputFileToLoad").files[0];
 
     if (inputFileToLoad) {
-
-        if(inputFileToLoad.size > 16000000) {
+        if(inputFileToLoad.size > 2097152) {
             //TODO сообщать пользователю, что файл слишком большой
             alert("Your file is too large");
             return false;
