@@ -85,12 +85,18 @@ https.createServer(options, function(req, res) {
                         });
                     break;
                 case '/add_room':
-                    db.dialogs.addRoom(extra.parseCookies(req).login)
+                    extra.safeRequest(req, res)
                         .then(function (data) {
-                            res.end(data);
+                            db.dialogs.addRoom(extra.parseCookies(req).login, data.title)
+                                .then(function (data) {
+                                    res.end(data);
+                                })
+                                .catch(function (err) {
+                                    log.error("Error at app.js/chat/addRoom:", err);
+                                });
                         })
                         .catch(function (err) {
-                            log.error("Error at app.js/chat/addRoom:", err);
+                            log.error('Error at app.js/chat/addRoom:', err);
                         });
                     break;
                 case '/get_rooms':

@@ -76,7 +76,7 @@ function showRoom(data) {
         }, false);
     }
 
-    divRoom.appendChild(document.createTextNode(data.id));
+    divRoom.appendChild(document.createTextNode(data.title));
     divLine.appendChild(divRoom);
 
     if (data.author == getCookieValue("login")) {
@@ -165,12 +165,16 @@ function xhrGetNews() {
 }
 
 function xhrAddRoom() {
+
+    var title = prompt("Введите название комнаты ", ""); //TODO: Frontend
+    if (!title) return;
+
     return new Promise(function(response, reject) {
         var xhr = new XMLHttpRequest();
 
         xhr.open("POST", '/chat/add_room', true);
 
-        xhr.send();
+        xhr.send(JSON.stringify({title: title}));
 
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4) {
