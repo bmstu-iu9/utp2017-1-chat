@@ -1,24 +1,28 @@
 window.onload = function() {
+
     loadRooms();
-    getNews();
+    getGeolocation();
 
     document.getElementById("user").textContent = "Логин: " + getCookieValue("login");
     document.getElementById("exit").addEventListener("click", exit, false);
     document.getElementById("addRoom").addEventListener("click", addRoom, false);
 };
 
+
 function getNews() {
-    xhrGetNews()
+    xhrGetNews(crd)
         .then(function (data) {
             data = JSON.parse(data);
 
             if (data.length != 0) {
-                var divNews = document.createElement('div');
-                divNews.className = 'news';
+                data.forEach(function(msg) {
+                    var divNewsMsg = document.createElement('div');
+                    divNewsMsg.className = 'news';
 
-                divNews.appendChild(document.createTextNode(data.text));
+                    divNewsMsg.appendChild(document.createTextNode(msg.text));
 
-                document.getElementById("nList").appendChild(divNews);
+                    document.getElementById("nList").appendChild(divNewsMsg);
+                })
             }
         })
         .catch(function (err) {
@@ -26,7 +30,36 @@ function getNews() {
         });
 }
 
+var crd = {
+    latitude: 10,//55.7485,
+    longitude: 10,//37.6184,
+};
+
+function getGeolocation() {
+
+    var options = {
+        timeout: 5 * 1000,
+        maximumAge: 10 * 60 * 1000,
+        enableHighAccuracy: false,
+    };
+
+    function success(pos) {
+        crd.latitude = pos.coords.latitude;
+        crd.longitude = pos.coords.longitude;
+        getNews();
+    };
+
+    function error(err) {
+        console.warn(`ERROR(${err.code}): ${err.message}`);
+        getNews();
+    };
+
+     navigator.geolocation.getCurrentPosition(success, error, options);
+};
+
+
 function addRoom() {
+    alert(startPos.coords.latitude);
     xhrAddRoom()
         .then(function (data) {
             reshowRooms();
@@ -142,13 +175,13 @@ function exit() {
 
 
 
-function xhrGetNews() {
+function xhrGetNews(crd) {
     return new Promise(function(response, reject) {
         var xhr = new XMLHttpRequest();
 
         xhr.open("POST", '/chat/news', true);
 
-        xhr.send();
+        xhr.send(JSON.stringify(crd));
 
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4) {

@@ -61,13 +61,11 @@ https.createServer(options, function(req, res) {
                     chatShow(req, res, "/rooms.html");
                     break;
                 case '/news':
-                    db.dialogs.getNews()
-                        .then(function (data) {
-                            res.end(JSON.stringify(data));
-                        })
-                        .catch(function (err) {
-                            log.error('Error at app.js/chat/getNews:', err);
-                        });
+                    extra.safeRequest(req, res)
+                        .then(db.dialogs.getNews)
+                        .then(data => { res.end(JSON.stringify(data)); })
+                        .catch(err => { log.error('Error at app.js/chat/getNews:', err) });
+
                     break;
                 case '/delete_room':
                     extra.safeRequest(req, res)
