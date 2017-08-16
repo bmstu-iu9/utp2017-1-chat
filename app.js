@@ -130,7 +130,7 @@ https.createServer(options, function(req, res) {
                 case '/exit':
                     db.sessions.deleteSession(extra.parseCookies(req).sessionID)
                         .then(function (data) {
-                            res.writeHead(302, { Location: '' });
+                            // КОСТЫЛЬ res.writeHead(302, { Location: '' });
                             res.end();
                         })
                         .catch(function (err) {
@@ -156,7 +156,7 @@ https.createServer(options, function(req, res) {
                                     });
                                 break;
                             case '/exit':
-                                res.writeHead(302, { Location: '' });
+                                // КОСТЫЛЬ res.writeHead(302, { Location: '' });
                                 res.end();
                                 break;
                             case '/subscribe':
