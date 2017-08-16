@@ -112,7 +112,7 @@ function oldMessages() {
                     get_message(obj);
 
                 });
-            } else if (xhr.status != 200){
+            } else {
                 window.location.replace(window.location.origin + '/error'
                     + xhr.statusCode);
             }

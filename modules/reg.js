@@ -14,7 +14,7 @@ exports.reg = function(req, res) {
                         .then(function(data) {
                             /*
                             ********************
-                              CAN'T TOUCH THIS
+                              DON'T TOUCH THIS
                             ********************
                             var forge = require('node-forge');
                             var rsa = forge.pki.rsa;
