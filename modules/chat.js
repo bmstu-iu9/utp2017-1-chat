@@ -45,7 +45,7 @@ exports.publish = function(req, res, room) {
             var name = require('./extra').parseCookies(req).login;
             var time = (new Date(new Date().getTime()).toLocaleTimeString());
             if (data.attachment){
-                data.id = name+Date.now();
+                data.id = name + Date.now();
                 saveImage(data.attachment, data.id);
                 delete data.attachment;
             }
@@ -87,7 +87,7 @@ var saveImage = function (image, id) {
     var fs = require('fs');
     fs.mkdir("./temp", function () {
         fs.writeFile('./temp/' + id + '.png', Buffer(image, 'Base64'),  function (err) {
-            if(err) log.error("chat.js/saveImage: " + err);
+            if (err) log.error("chat.js/saveImage: " + err);
         });
     });
 
