@@ -8,6 +8,30 @@ window.onload = function() {
     document.getElementById("addRoom").addEventListener("click", addRoom, false);
 };
 
+function getWeather() {
+    return new Promise(function(response, reject) {
+        var request = new XMLHttpRequest();
+        var url = "https://api.openweathermap.org/data/2.5/weather?lat=" + crd.latitude +
+            "&lon=" + crd.longitude + "&APPID=5356a6c0c9e4b5246d1aad91aa51fcbd";
+
+        request.open('GET', url);
+
+        request.onreadystatechange = function () {
+            if (this.readyState == 4) {
+                if (this.status == 200) {
+                    alert(this.responseText);
+                    response(JSON.parse(this.responseText));
+                }
+                else {
+                    reject(this.status);
+                }
+            }
+        }
+
+        request.send();
+    });
+}
+
 
 function getNews() {
     xhrGetNews(crd)
@@ -15,6 +39,31 @@ function getNews() {
             data = JSON.parse(data);
 
             if (data.length != 0) {
+            //    document.getElementById("nList").innerHTML = "";
+
+                getWeather().then(function(data) {
+                    crd.city = data.name;
+                    crd.country = data.sys.country;
+                    crd.temperature = data.main.temp - 273.15;
+                    crd.weather = data.weather[0].description;
+                     })
+                    .then(function()  {
+                        var divNewsMsg = document.createElement('div');
+                        divNewsMsg.className = 'news';
+
+                        divNewsMsg.appendChild(document.createTextNode("Ваша страна: " + crd.country + " | Ваш город " + crd.city +
+                            " | Температура " + crd.temperature + " | Погода " + crd.weather));
+
+                        document.getElementById("nList").appendChild(divNewsMsg);
+                    })
+
+
+                var img = new Image(413, 300);
+                img.src = "https://maps.googleapis.com/maps/api/staticmap?center=" + crd.latitude + "," + crd.longitude +
+                    "&zoom=16&size=500x500&path=weight:3%7Ccolor:blue%7Cenc:{coaHnetiVjM??_SkM??~R&key= AIzaSyDbksHMbdwjiNJj-JKp8O7vJd-Hfa4Ez94";
+                document.getElementById("nList").appendChild(img);
+
+
                 data.forEach(function(msg) {
                     var divNewsMsg = document.createElement('div');
                     divNewsMsg.className = 'news';
@@ -37,6 +86,12 @@ var crd = {
 
 function getGeolocation() {
 
+  //  document.getElementById("nList").innerHTML = "<p>Locating…</p>";
+    if (!navigator.geolocation){
+        document.getElementById("nList").innerHTML = "<p>Geolocation is not supported by your browser</p>";
+        return;
+    }
+
     var options = {
         timeout: 5 * 1000,
         maximumAge: 10 * 60 * 1000,
@@ -51,6 +106,12 @@ function getGeolocation() {
 
     function error(err) {
         console.warn(`ERROR(${err.code}): ${err.message}`);
+        // error.code can be:
+        //   0: unknown error
+        //   1: permission denied
+        //   2: position unavailable (error response from location provider)
+        //   3: timed out
+
         getNews();
     };
 
@@ -59,7 +120,6 @@ function getGeolocation() {
 
 
 function addRoom() {
-    alert(startPos.coords.latitude);
     xhrAddRoom()
         .then(function (data) {
             reshowRooms();
