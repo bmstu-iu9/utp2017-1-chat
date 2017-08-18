@@ -1,7 +1,6 @@
 window.onload = function() {
 
     loadRooms();
-    loadkeys();
     getGeolocation();
 
     document.getElementById("user").textContent = "Логин: " + getCookieValue("login");
@@ -104,6 +103,7 @@ function getGeolocation() {
         console.warn(`ERROR(${err.code}): ${err.message}`);
         if (err.code == 1) {
             alert("Вы не разрешили доступ к своей геопозиции, поэтому я буду считать, что вы на Нахимовском проспекте");
+            getNews({latitude: 55.66372873, longitude: 37.60740817 })
         } else getNews({});
     };
 
