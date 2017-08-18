@@ -80,7 +80,7 @@ function getNews(crd) {
 
 
             } else {
-                document.getElementByIgit statusd("nList").innerHTML = "";
+                document.getElementById("nList").innerHTML = "";
                 weather = {};
 
                 var img = new Image(413, 300);
@@ -108,7 +108,7 @@ function getNews(crd) {
                         document.getElementById("nList").appendChild(msg);
                     })
                     .then(function() {
-                        loadnews(data);
+                        loadNews(data);
                     })
 
 
