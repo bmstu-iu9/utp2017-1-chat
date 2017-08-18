@@ -233,6 +233,11 @@ https.createServer(options, function(req, res) {
                             defaultError(req, res);
                     }
                     break;
+                case '/flags':
+                    URL = urlLinks[2];
+                    require('./modules/send')
+                    ("sources/image_sources/flags" + URL, res, 'image/png');
+                    break;
                 case '/error':
                     switch (urlLinks[2]) {
                         case '/0.png':

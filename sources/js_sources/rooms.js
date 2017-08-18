@@ -19,7 +19,6 @@ function getWeather(crd) {
         request.onreadystatechange = function () {
             if (this.readyState == 4) {
                 if (this.status == 200) {
-                  //  alert(this.responseText);
                     response(JSON.parse(this.responseText));
                 }
                 else {
@@ -32,6 +31,18 @@ function getWeather(crd) {
     });
 }
 
+function loadNews(data) {
+    data.news.forEach(function(msg) {
+        var divNewsMsg = document.createElement('div');
+        divNewsMsg.className = 'news';
+
+        divNewsMsg.appendChild(document.createTextNode(msg.text));
+
+        document.getElementById("nList").appendChild(divNewsMsg);
+    })
+}
+
+
 
 function getNews(crd) {
     xhrGetNews(crd)
@@ -40,20 +51,55 @@ function getNews(crd) {
 
             if (!navigator.geolocation) {
                 document.getElementById("nList").innerHTML = "<p>Geolocation is not supported by your browser, weather and map is not supported too</p>";
+                loadNews(data);
             }
+
             else if (!!!crd.latitude) {
                 document.getElementById("nList").innerHTML = "<p>Произошла ошибка при определении вашего " +
                     "местонахождения, поэтому погода и карта не будут прогружены</p>";
+                loadNews(data);
+
+            } else if (crd.latitude == 55.66372873 && crd.longitude == 37.60740817) {
+                document.getElementById("nList").innerHTML = "ПОЗДРАВЛЯЮ! ВЫ НАХОДИТЕСЬ НА САМЫХ ЛУЧШИХ ТЕРРИТОРИЯХ НА ЭТОЙ ЧЕРТОВОЙ ЗЕМЛЕ!";
+
+                var img = new Image(413, 200);
+                img.src = "https://maps.googleapis.com/maps/api/staticmap?center=" + crd.latitude + "," + crd.longitude +
+                    "&zoom=16&size=413x200&path=weight:3%7Ccolor:blue%7Cenc:{coaHnetiVjM??_SkM??~R&" +
+                    "key=AIzaSyDbksHMbdwjiNJj-JKp8O7vJd-Hfa4Ez94";
+                document.getElementById("nList").appendChild(img);
+
+                var img2 = new Image(413, 200);
+                img2.src = "../image_sources/flags/NAHIM.png";
+                document.getElementById("nList").appendChild(img2);
+
+                var msg = document.createElement('div');
+                msg.className = 'news';
+                msg.innerHTML = "Ваша страна: NAHIM (also known as the center of the world)" +
+                    "<br>" + "Температура: 30 (like temperature in heaven)" + "<br>" + "Погода: always the best";
+                document.getElementById("nList").appendChild(msg);
+
+
             } else {
-                document.getElementById("nList").innerHTML = "";
+                document.getElementByIgit statusd("nList").innerHTML = "";
                 weather = {};
+
+                var img = new Image(413, 300);
+                img.src = "https://maps.googleapis.com/maps/api/staticmap?center=" + crd.latitude + "," + crd.longitude +
+                    "&zoom=10&size=500x500&path=weight:3%7Ccolor:blue%7Cenc:{coaHnetiVjM??_SkM??~R&" +
+                    "key=AIzaSyDbksHMbdwjiNJj-JKp8O7vJd-Hfa4Ez94";
+                document.getElementById("nList").appendChild(img);
 
                 getWeather(crd).then(function(data) {
                     weather.city = data.name;
                     weather.country = data.sys.country;
-                    weather.temperature = data.main.temp - 273.15;
+                    weather.temperature = Math.round(data.main.temp - 273.15);
                     weather.descr = data.weather[0].description;
                 })
+                    .then(function() {
+                        var img = new Image(64, 64);
+                        img.src = "../image_sources/flags/" + weather.country + ".png";
+                        document.getElementById("nList").appendChild(img);
+                    })
                     .then(function()  {
                         var msg = document.createElement('div');
                         msg.className = 'news';
@@ -61,22 +107,13 @@ function getNews(crd) {
                             "<br>" + "Температура: " + weather.temperature + "<br>" + "Погода: " + weather.descr;
                         document.getElementById("nList").appendChild(msg);
                     })
+                    .then(function() {
+                        loadnews(data);
+                    })
 
 
-                var img = new Image(413, 300);
-                img.src = "https://maps.googleapis.com/maps/api/staticmap?center=" + crd.latitude + "," + crd.longitude +
-                    "&zoom=16&size=500x500&path=weight:3%7Ccolor:blue%7Cenc:{coaHnetiVjM??_SkM??~R&key=AIzaSyDbksHMbdwjiNJj-JKp8O7vJd-Hfa4Ez94";
-                document.getElementById("nList").appendChild(img);
             }
 
-            data.news.forEach(function(msg) {
-                var divNewsMsg = document.createElement('div');
-                divNewsMsg.className = 'news';
-
-                divNewsMsg.appendChild(document.createTextNode(msg.text));
-
-                document.getElementById("nList").appendChild(divNewsMsg);
-            })
         })
         .catch(function (err) {
             window.location.replace(window.location.origin + '/error' + err);
