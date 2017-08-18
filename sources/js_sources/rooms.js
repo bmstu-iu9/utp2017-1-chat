@@ -1,6 +1,7 @@
 window.onload = function() {
 
     loadRooms();
+    loadkeys();
     getGeolocation();
 
     document.getElementById("user").textContent = "Логин: " + getCookieValue("login");
@@ -8,7 +9,7 @@ window.onload = function() {
     document.getElementById("addRoom").addEventListener("click", addRoom, false);
 };
 
-function getWeather() {
+function getWeather(crd) {
     return new Promise(function(response, reject) {
         var request = new XMLHttpRequest();
         var url = "https://api.openweathermap.org/data/2.5/weather?lat=" + crd.latitude +
@@ -19,7 +20,7 @@ function getWeather() {
         request.onreadystatechange = function () {
             if (this.readyState == 4) {
                 if (this.status == 200) {
-                    alert(this.responseText);
+                  //  alert(this.responseText);
                     response(JSON.parse(this.responseText));
                 }
                 else {
@@ -33,86 +34,77 @@ function getWeather() {
 }
 
 
-function getNews() {
+function getNews(crd) {
     xhrGetNews(crd)
         .then(function (data) {
             data = JSON.parse(data);
 
-            if (data.length != 0) {
-            //    document.getElementById("nList").innerHTML = "";
+            if (!navigator.geolocation) {
+                document.getElementById("nList").innerHTML = "<p>Geolocation is not supported by your browser, weather and map is not supported too</p>";
+            }
+            else if (!!!crd.latitude) {
+                document.getElementById("nList").innerHTML = "<p>Произошла ошибка при определении вашего " +
+                    "местонахождения, поэтому погода и карта не будут прогружены</p>";
+            } else {
+                document.getElementById("nList").innerHTML = "";
+                weather = {};
 
-                getWeather().then(function(data) {
-                    crd.city = data.name;
-                    crd.country = data.sys.country;
-                    crd.temperature = data.main.temp - 273.15;
-                    crd.weather = data.weather[0].description;
-                     })
+                getWeather(crd).then(function(data) {
+                    weather.city = data.name;
+                    weather.country = data.sys.country;
+                    weather.temperature = data.main.temp - 273.15;
+                    weather.descr = data.weather[0].description;
+                })
                     .then(function()  {
-                        var divNewsMsg = document.createElement('div');
-                        divNewsMsg.className = 'news';
-
-                        divNewsMsg.appendChild(document.createTextNode("Ваша страна: " + crd.country + " | Ваш город " + crd.city +
-                            " | Температура " + crd.temperature + " | Погода " + crd.weather));
-
-                        document.getElementById("nList").appendChild(divNewsMsg);
+                        var msg = document.createElement('div');
+                        msg.className = 'news';
+                        msg.innerHTML = "Ваша страна: " + weather.country + "<br>" + "Ваш город/район: " + weather.city +
+                            "<br>" + "Температура: " + weather.temperature + "<br>" + "Погода: " + weather.descr;
+                        document.getElementById("nList").appendChild(msg);
                     })
 
 
                 var img = new Image(413, 300);
                 img.src = "https://maps.googleapis.com/maps/api/staticmap?center=" + crd.latitude + "," + crd.longitude +
-                    "&zoom=16&size=500x500&path=weight:3%7Ccolor:blue%7Cenc:{coaHnetiVjM??_SkM??~R&key= AIzaSyDbksHMbdwjiNJj-JKp8O7vJd-Hfa4Ez94";
+                    "&zoom=16&size=500x500&path=weight:3%7Ccolor:blue%7Cenc:{coaHnetiVjM??_SkM??~R&key=AIzaSyDbksHMbdwjiNJj-JKp8O7vJd-Hfa4Ez94";
                 document.getElementById("nList").appendChild(img);
-
-
-                data.forEach(function(msg) {
-                    var divNewsMsg = document.createElement('div');
-                    divNewsMsg.className = 'news';
-
-                    divNewsMsg.appendChild(document.createTextNode(msg.text));
-
-                    document.getElementById("nList").appendChild(divNewsMsg);
-                })
             }
+
+            data.news.forEach(function(msg) {
+                var divNewsMsg = document.createElement('div');
+                divNewsMsg.className = 'news';
+
+                divNewsMsg.appendChild(document.createTextNode(msg.text));
+
+                document.getElementById("nList").appendChild(divNewsMsg);
+            })
         })
         .catch(function (err) {
             window.location.replace(window.location.origin + '/error' + err);
         });
 }
 
-var crd = {
-    latitude: 10,//55.7485,
-    longitude: 10,//37.6184,
-};
 
 function getGeolocation() {
 
-  //  document.getElementById("nList").innerHTML = "<p>Locating…</p>";
-    if (!navigator.geolocation){
-        document.getElementById("nList").innerHTML = "<p>Geolocation is not supported by your browser</p>";
-        return;
-    }
+    document.getElementById("nList").innerHTML = "<p> <h1> Locating… </h1> </p>";
+    if (!navigator.geolocation) return getNews({});
 
     var options = {
         timeout: 5 * 1000,
         maximumAge: 10 * 60 * 1000,
-        enableHighAccuracy: false,
+        enableHighAccuracy: false
     };
 
     function success(pos) {
-        crd.latitude = pos.coords.latitude;
-        crd.longitude = pos.coords.longitude;
-        getNews();
+        getNews(pos.coords);
     };
 
     function error(err) {
         console.warn(`ERROR(${err.code}): ${err.message}`);
-        // error.code can be:
-        //   0: unknown error
-        //   1: permission denied
-        //   2: position unavailable (error response from location provider)
-        //   3: timed out
-
-        getNews();
+        if (err.code == 1) {
+            alert("Вы не разрешили доступ к своей геопозиции, поэтому я буду считать, что вы на Нахимовском проспекте");
+        } else getNews({});
     };
 
      navigator.geolocation.getCurrentPosition(success, error, options);
@@ -250,7 +242,6 @@ function xhrGetNews(crd) {
 
                 } else {
                     reject(xhr.status);
-
                 }
             }
         };

@@ -61,8 +61,9 @@ https.createServer(options, function(req, res) {
                     chatShow(req, res, "/rooms.html");
                     break;
                 case '/news':
-                    extra.safeRequest(req, res)
-                        .then(db.dialogs.getNews)
+                    extra.safeRequest(req, res);
+       //                 .then(UserRefreshCoords);
+                    db.dialogs.getNews()
                         .then(data => { res.end(JSON.stringify(data)); })
                         .catch(err => { log.error('Error at app.js/chat/getNews:', err) });
 
