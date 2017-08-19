@@ -61,13 +61,12 @@ https.createServer(options, function(req, res) {
                     chatShow(req, res, "/rooms.html");
                     break;
                 case '/news':
+                    extra.safeRequest(req, res);
+       //                 .then(UserRefreshCoords);
                     db.dialogs.getNews()
-                        .then(function (data) {
-                            res.end(JSON.stringify(data));
-                        })
-                        .catch(function (err) {
-                            log.error('Error at app.js/chat/getNews:', err);
-                        });
+                        .then(data => { res.end(JSON.stringify(data)); })
+                        .catch(err => { log.error('Error at app.js/chat/getNews:', err) });
+
                     break;
                 case '/delete_room':
                     extra.safeRequest(req, res)
@@ -233,6 +232,11 @@ https.createServer(options, function(req, res) {
                         default:
                             defaultError(req, res);
                     }
+                    break;
+                case '/flags':
+                    URL = urlLinks[2];
+                    require('./modules/send')
+                    ("sources/image_sources/flags" + URL, res, 'image/png');
                     break;
                 case '/error':
                     switch (urlLinks[2]) {

@@ -1,30 +1,152 @@
 window.onload = function() {
+
     loadRooms();
-    getNews();
+    getGeolocation();
 
     document.getElementById("user").textContent = "Логин: " + getCookieValue("login");
     document.getElementById("exit").addEventListener("click", exit, false);
     document.getElementById("addRoom").addEventListener("click", addRoom, false);
 };
 
-function getNews() {
-    xhrGetNews()
+function getWeather(crd) {
+    return new Promise(function(response, reject) {
+        var request = new XMLHttpRequest();
+        var url = "https://api.openweathermap.org/data/2.5/weather?lat=" + crd.latitude +
+            "&lon=" + crd.longitude + "&APPID=5356a6c0c9e4b5246d1aad91aa51fcbd";
+
+        request.open('GET', url);
+
+        request.onreadystatechange = function () {
+            if (this.readyState == 4) {
+                if (this.status == 200) {
+                    response(JSON.parse(this.responseText));
+                }
+                else {
+                    reject(this.status);
+                }
+            }
+        }
+
+        request.send();
+    });
+}
+
+function loadNews(data) {
+    data.news.forEach(function(msg) {
+        var divNewsMsg = document.createElement('div');
+        divNewsMsg.className = 'news';
+
+        divNewsMsg.appendChild(document.createTextNode(msg.text));
+
+        document.getElementById("nList").appendChild(divNewsMsg);
+    })
+}
+
+
+
+function getNews(crd) {
+    xhrGetNews(crd)
         .then(function (data) {
             data = JSON.parse(data);
 
-            if (data.length != 0) {
-                var divNews = document.createElement('div');
-                divNews.className = 'news';
-
-                divNews.appendChild(document.createTextNode(data.text));
-
-                document.getElementById("nList").appendChild(divNews);
+            if (!navigator.geolocation) {
+                document.getElementById("nList").innerHTML = "<p>Geolocation is not supported by your browser, weather and map is not supported too</p>";
+                loadNews(data);
             }
+
+            else if (!!!crd.latitude) {
+                document.getElementById("nList").innerHTML = "<p>Произошла ошибка при определении вашего " +
+                    "местонахождения, поэтому погода и карта не будут прогружены</p>";
+                loadNews(data);
+
+            } else if (crd.latitude == 55.66372873 && crd.longitude == 37.60740817) {
+                document.getElementById("nList").innerHTML = "ПОЗДРАВЛЯЮ! ВЫ НАХОДИТЕСЬ НА САМЫХ ЛУЧШИХ ТЕРРИТОРИЯХ НА ЭТОЙ ЧЕРТОВОЙ ЗЕМЛЕ!";
+
+                var img = new Image(413, 200);
+                img.src = "https://maps.googleapis.com/maps/api/staticmap?center=" + crd.latitude + "," + crd.longitude +
+                    "&zoom=16&size=413x200&path=weight:3%7Ccolor:blue%7Cenc:{coaHnetiVjM??_SkM??~R&" +
+                    "key=AIzaSyDbksHMbdwjiNJj-JKp8O7vJd-Hfa4Ez94";
+                document.getElementById("nList").appendChild(img);
+
+                var img2 = new Image(413, 200);
+                img2.src = "../image_sources/flags/NAHIM.png";
+                document.getElementById("nList").appendChild(img2);
+
+                var msg = document.createElement('div');
+                msg.className = 'news';
+                msg.innerHTML = "Ваша страна: NAHIM (also known as the center of the world)" +
+                    "<br>" + "Температура: 30 (like temperature in heaven)" + "<br>" + "Погода: always the best";
+                document.getElementById("nList").appendChild(msg);
+
+
+            } else {
+                document.getElementById("nList").innerHTML = "";
+                weather = {};
+
+                var img = new Image(413, 300);
+                img.src = "https://maps.googleapis.com/maps/api/staticmap?center=" + crd.latitude + "," + crd.longitude +
+                    "&zoom=10&size=500x500&path=weight:3%7Ccolor:blue%7Cenc:{coaHnetiVjM??_SkM??~R&" +
+                    "key=AIzaSyDbksHMbdwjiNJj-JKp8O7vJd-Hfa4Ez94";
+                document.getElementById("nList").appendChild(img);
+
+                getWeather(crd).then(function(data) {
+                    weather.city = data.name;
+                    weather.country = data.sys.country;
+                    weather.temperature = Math.round(data.main.temp - 273.15);
+                    weather.descr = data.weather[0].description;
+                })
+                    .then(function() {
+                        var img = new Image(64, 64);
+                        img.src = "../image_sources/flags/" + weather.country + ".png";
+                        document.getElementById("nList").appendChild(img);
+                    })
+                    .then(function()  {
+                        var msg = document.createElement('div');
+                        msg.className = 'news';
+                        msg.innerHTML = "Ваша страна: " + weather.country + "<br>" + "Ваш город/район: " + weather.city +
+                            "<br>" + "Температура: " + weather.temperature + "<br>" + "Погода: " + weather.descr;
+                        document.getElementById("nList").appendChild(msg);
+                    })
+                    .then(function() {
+                        loadNews(data);
+                    })
+
+
+            }
+
         })
         .catch(function (err) {
             window.location.replace(window.location.origin + '/error' + err);
         });
 }
+
+
+function getGeolocation() {
+
+    document.getElementById("nList").innerHTML = "<p> <h1> Locating… </h1> </p>";
+    if (!navigator.geolocation) return getNews({});
+
+    var options = {
+        timeout: 5 * 1000,
+        maximumAge: 10 * 60 * 1000,
+        enableHighAccuracy: false
+    };
+
+    function success(pos) {
+        getNews(pos.coords);
+    };
+
+    function error(err) {
+        console.warn(`ERROR(${err.code}): ${err.message}`);
+        if (err.code == 1) {
+            alert("Вы не разрешили доступ к своей геопозиции, поэтому я буду считать, что вы на Нахимовском проспекте");
+            getNews({latitude: 55.66372873, longitude: 37.60740817 })
+        } else getNews({});
+    };
+
+     navigator.geolocation.getCurrentPosition(success, error, options);
+};
+
 
 function addRoom() {
     xhrAddRoom()
@@ -147,13 +269,13 @@ function exit() {
 
 
 
-function xhrGetNews() {
+function xhrGetNews(crd) {
     return new Promise(function(response, reject) {
         var xhr = new XMLHttpRequest();
 
         xhr.open("POST", '/chat/news', true);
 
-        xhr.send();
+        xhr.send(JSON.stringify(crd));
 
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4) {
@@ -162,7 +284,6 @@ function xhrGetNews() {
 
                 } else {
                     reject(xhr.status);
-
                 }
             }
         };
