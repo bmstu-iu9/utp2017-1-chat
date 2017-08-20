@@ -256,9 +256,17 @@ https.createServer(options, function(req, res) {
                             require('./modules/send')
                             ("sources/image_sources/error/404.png", res, 'image/png');
                             break;
-                        case '/502.jpg':
+                        case '/cat404.jpg':
                             require('./modules/send')
-                            ("sources/image_sources/error/502.png", res, 'image/jpg');
+                            ("sources/image_sources/error/cat404.jpg", res, 'image/jpg');
+                            break;
+                        case '/poly404.png':
+                            require('./modules/send')
+                            ("sources/image_sources/error/poly404.png", res, 'image/png');
+                            break;
+                        case '/shark404.png':
+                            require('./modules/send')
+                            ("sources/image_sources/error/shark404.png", res, 'image/png');
                             break;
                     }
                     break;
@@ -288,6 +296,10 @@ https.createServer(options, function(req, res) {
                     require('./modules/send')
                     ("sources/css_sources/rooms.css", res, 'text/css');
                     break;
+                case '/error404.css':
+                    require('./modules/send')
+                    ("sources/css_sources/error404.css", res, 'text/css');
+                    break;
                 default:
                     defaultError(req, res);
             }
@@ -311,7 +323,9 @@ https.createServer(options, function(req, res) {
             }
             break;
         default:
-            defaultError(req, res);
+            log.debug(req.url);
+            require('./modules/send')("sources/html_sources/error404.html", res, 'text/html');
+            //defaultError(req, res);
     }
 }).listen(4433);
 
