@@ -61,13 +61,12 @@ https.createServer(options, function(req, res) {
                     chatShow(req, res, "/rooms.html");
                     break;
                 case '/news':
+                    extra.safeRequest(req, res);
+       //                 .then(UserRefreshCoords);
                     db.dialogs.getNews()
-                        .then(function (data) {
-                            res.end(JSON.stringify(data));
-                        })
-                        .catch(function (err) {
-                            log.error('Error at app.js/chat/getNews:', err);
-                        });
+                        .then(data => { res.end(JSON.stringify(data)); })
+                        .catch(err => { log.error('Error at app.js/chat/getNews:', err) });
+
                     break;
                 case '/delete_room':
                     extra.safeRequest(req, res)
@@ -85,12 +84,18 @@ https.createServer(options, function(req, res) {
                         });
                     break;
                 case '/add_room':
-                    db.dialogs.addRoom(extra.parseCookies(req).login)
+                    extra.safeRequest(req, res)
                         .then(function (data) {
-                            res.end(data);
+                            db.dialogs.addRoom(extra.parseCookies(req).login, data.title)
+                                .then(function (data) {
+                                    res.end(data);
+                                })
+                                .catch(function (err) {
+                                    log.error("Error at app.js/chat/addRoom:", err);
+                                });
                         })
                         .catch(function (err) {
-                            log.error("Error at app.js/chat/addRoom:", err);
+                            log.error('Error at app.js/chat/addRoom:', err);
                         });
                     break;
                 case '/get_rooms':
@@ -124,7 +129,7 @@ https.createServer(options, function(req, res) {
                 case '/exit':
                     db.sessions.deleteSession(extra.parseCookies(req).sessionID)
                         .then(function (data) {
-                            res.writeHead(302, { Location: '' });
+                            // КОСТЫЛЬ res.writeHead(302, { Location: '' });
                             res.end();
                         })
                         .catch(function (err) {
@@ -134,7 +139,6 @@ https.createServer(options, function(req, res) {
                 default:
                     if (urlLinks[1].substr(0, 5) == '/room') {
                         var room = urlLinks[1].substr(5, urlLinks[1].length - 5);
-
                         switch (urlLinks[2]) {
                             case '/':
                                 chatShow(req, res, "/chat.html");
@@ -151,7 +155,7 @@ https.createServer(options, function(req, res) {
                                     });
                                 break;
                             case '/exit':
-                                res.writeHead(302, { Location: '' });
+                                // КОСТЫЛЬ res.writeHead(302, { Location: '' });
                                 res.end();
                                 break;
                             case '/subscribe':
@@ -161,6 +165,11 @@ https.createServer(options, function(req, res) {
                                 chat.publish(req, res, room);
                                 chat.subscribe(req, res, room);
                                 break;
+                            default:
+                                if(urlLinks[2].substr(0, 6) == '/image') {
+                                    require('./modules/send')
+                                    ("./temp"+urlLinks[3]+'.png', res, 'image/png');
+                                }
                         }
                     } else
                         defaultError(req, res);
@@ -224,6 +233,11 @@ https.createServer(options, function(req, res) {
                             defaultError(req, res);
                     }
                     break;
+                case '/flags':
+                    URL = urlLinks[2];
+                    require('./modules/send')
+                    ("sources/image_sources/flags" + URL, res, 'image/png');
+                    break;
                 case '/error':
                     switch (urlLinks[2]) {
                         case '/0.png':
@@ -242,9 +256,17 @@ https.createServer(options, function(req, res) {
                             require('./modules/send')
                             ("sources/image_sources/error/404.png", res, 'image/png');
                             break;
-                        case '/502.jpg':
+                        case '/cat404.jpg':
                             require('./modules/send')
-                            ("sources/image_sources/error/502.png", res, 'image/jpg');
+                            ("sources/image_sources/error/cat404.jpg", res, 'image/jpg');
+                            break;
+                        case '/poly404.png':
+                            require('./modules/send')
+                            ("sources/image_sources/error/poly404.png", res, 'image/png');
+                            break;
+                        case '/shark404.png':
+                            require('./modules/send')
+                            ("sources/image_sources/error/shark404.png", res, 'image/png');
                             break;
                     }
                     break;
@@ -274,6 +296,10 @@ https.createServer(options, function(req, res) {
                     require('./modules/send')
                     ("sources/css_sources/rooms.css", res, 'text/css');
                     break;
+                case '/error404.css':
+                    require('./modules/send')
+                    ("sources/css_sources/error404.css", res, 'text/css');
+                    break;
                 default:
                     defaultError(req, res);
             }
@@ -297,7 +323,9 @@ https.createServer(options, function(req, res) {
             }
             break;
         default:
-            defaultError(req, res);
+            log.debug(req.url);
+            require('./modules/send')("sources/html_sources/error404.html", res, 'text/html');
+            //defaultError(req, res);
     }
 }).listen(4433);
 
