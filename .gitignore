@@ -2,3 +2,7 @@
 /node_modules/db/Sessions/sessions.json
 /node_modules/db/Users/users.json
 /node_modules/db/Dialogs/dialogs.json
+/sources/image_sources/error/
+/sources/image_sources/Thumbs.db
+/.DS_Store
+/sources/.DS_Store/.DS_Store
