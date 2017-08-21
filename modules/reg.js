@@ -14,7 +14,7 @@ exports.reg = function(req, res) {
                         .then(function(data) {
                             /*
                             ********************
-                              CAN'T TOUCH THIS
+                              DON'T TOUCH THIS
                             ********************
                             var forge = require('node-forge');
                             var rsa = forge.pki.rsa;
@@ -24,8 +24,8 @@ exports.reg = function(req, res) {
                             console.log(forge.pki.rsa.decrypt(data, keys.publicKey, true, false));
                             var key = forge.pki.publicKeyToPem(keys.publicKey);*/
 
-                            var s = 'sessionID=' + forge.util.encode64(data) + '; Path=/';
-                            var s1 = 'login=' + body.login + '; Path=/';
+                            var s = 'sessionID=' + data + '; Path=/; Secure';
+                            var s1 = 'login=' + body.login + '; Path=/; Secure';
 
                             res.writeHead(200, {
                                 'Set-Cookie': [s, s1]

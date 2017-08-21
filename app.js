@@ -1,4 +1,6 @@
 var http = require('http');
+var https = require('https');
+var fs = require('fs');
 
 var chat = require('./modules/chat');
 var auth = require('./modules/auth');
@@ -12,13 +14,19 @@ var db = require('db');
 var tech = require('tech').server_tech;
 var log = require('tech').log;
 
+db.sessions.connect();
+db.users.connect();
+db.dialogs.connect();
 
-http.createServer(function(req, res) {
-    db.sessions.connect();
-    db.users.connect();
-    db.dialogs.connect();
+var options = {
+    key: fs.readFileSync('keys/key.pem'),
+    cert: fs.readFileSync('keys/cert.pem')
+};
 
-    switch (req.url) {
+https.createServer(options, function(req, res) {
+    var urlLinks = parse(req.url);
+
+    switch (urlLinks[0]) {
         case '/':
             auth.session(req, res);
             break;
@@ -26,139 +34,365 @@ http.createServer(function(req, res) {
             require('./modules/send')("sources/html_sources/error.html", res, 'text/html');
             break;
         case '/start':
-            require('./modules/send')("sources/html_sources/index.html", res, 'text/html');
-            break;
-        case '/start/a_connect':
-            auth.salt(req, res);
-            break;
-        case '/start/a_enter':
-            auth.auth(req, res);
-            break;
-        case '/start/r_connect':
-            reg.sendSalt(req, res);
-            break;
-        case '/start/r_enter':
-            reg.reg(req, res);
+            switch (urlLinks[1]) {
+                case '/':
+                    require('./modules/send')
+                    ("sources/html_sources/index.html", res, 'text/html');
+                    break;
+                case '/a_connect':
+                    auth.salt(req, res);
+                    break;
+                case '/a_enter':
+                    auth.auth(req, res);
+                    break;
+                case '/r_connect':
+                    reg.sendSalt(req, res);
+                    break;
+                case '/r_enter':
+                    reg.reg(req, res);
+                    break;
+                default:
+                    defaultError(req, res);
+            }
             break;
         case '/chat':
-            //if server don't contain sessionID, redirect to auth
-            db.sessions.deleteOldSessions()
-                .then(function(data) {
-                    db.sessions.getSession(extra.parseCookies(req).sessionID)
-                        .then(function(data) {
-                            if (data) {
-                                require('./modules/send')("sources/html_sources/chat.html",
-                                    res, 'text/html');
-                            } else {
-                                res.writeHead(302, { Location: 'start'});
-                                res.end();
-                            }
+            switch (urlLinks[1]) {
+                case '/':
+                    chatShow(req, res, "/rooms.html");
+                    break;
+                case '/news':
+                    extra.safeRequest(req, res);
+       //                 .then(UserRefreshCoords);
+                    db.dialogs.getNews()
+                        .then(data => { res.end(JSON.stringify(data)); })
+                        .catch(err => { log.error('Error at app.js/chat/getNews:', err) });
+
+                    break;
+                case '/delete_room':
+                    extra.safeRequest(req, res)
+                        .then(function (data) {
+                            db.dialogs.deleteRoom(JSON.parse(data.id))
+                                .then(function () {
+                                    res.end();
+                                })
+                                .catch(function (err) {
+                                    log.error('Error at app.js/chat/deleteRoom:', err);
+                                });
                         })
                         .catch(function (err) {
-                            log.error("Error at app.js/chat/getSession:", err);
+                            log.error('Error at app.js/chat/deleteRoom:', err);
                         });
-                })
-                .catch(function (err) {
-                    log.error('Error at app.js/chat/deleteOldSessions:', err);
-                });
+                    break;
+                case '/add_room':
+                    extra.safeRequest(req, res)
+                        .then(function (data) {
+                            db.dialogs.addRoom(extra.parseCookies(req).login, data.title)
+                                .then(function (data) {
+                                    res.end(data);
+                                })
+                                .catch(function (err) {
+                                    log.error("Error at app.js/chat/addRoom:", err);
+                                });
+                        })
+                        .catch(function (err) {
+                            log.error('Error at app.js/chat/addRoom:', err);
+                        });
+                    break;
+                case '/get_rooms':
+                    db.dialogs.getRooms()
+                        .then(function (data) {
+                            res.end(JSON.stringify(data));
+                        })
+                        .catch(function (err) {
+                            log.error("Error at app.js/chat/getRooms:", err);
+                        });
+                    break;
+                case '/redirect':
+                    extra.safeRequest(req, res)
+                        .then(function (data) {
+                            db.dialogs.containRoom(data)
+                                .then(function (data1) {
+                                    if (data1 != -1) {
+                                        res.end();
+                                    } else {
+                                        res.end("No such room");
+                                    }
+                                })
+                                .catch(function (err) {
+                                    log.error("Error at app.js/chat/redirect:", err);
+                                });
+                        })
+                        .catch(function (err) {
+                            log.error("Error at app.js/chat/redirect:", err);
+                        });
+                    break;
+                case '/exit':
+                    db.sessions.deleteSession(extra.parseCookies(req).sessionID)
+                        .then(function (data) {
+                            // КОСТЫЛЬ res.writeHead(302, { Location: '' });
+                            res.end();
+                        })
+                        .catch(function (err) {
+                            log.error("Error at app.js/chat/deleteSession", err);
+                        });
+                    break;
+                default:
+                    if (urlLinks[1].substr(0, 5) == '/room') {
+                        var room = urlLinks[1].substr(5, urlLinks[1].length - 5);
+                        switch (urlLinks[2]) {
+                            case '/':
+                                chatShow(req, res, "/chat.html");
+                                break;
+                            case '/msg':
+                                db.dialogs.getMessages(room, 0, true)
+                                    .then(function(data) {
+                                        res.end(JSON.stringify(data));
+                                        
+                                    })
+                                    .catch(function (err) {
+                                        log.error('Error at app.js/chat/msg' +
+                                            '/getMessages', err);
+                                    });
+                                break;
+                            case '/exit':
+                                // КОСТЫЛЬ res.writeHead(302, { Location: '' });
+                                res.end();
+                                break;
+                            case '/subscribe':
+                                subscribeFunc(req, res, room);
+                                break;
+                            case '/publish':
+                                chat.publish(req, res, room);
+                                chat.subscribe(req, res, room);
+                                break;
+                            default:
+                                if(urlLinks[2].substr(0, 6) == '/image') {
+                                    require('./modules/send')
+                                    ("./temp"+urlLinks[3]+'.png', res, 'image/png');
+                                }
+                        }
+                    } else
+                        defaultError(req, res);
+            }
             break;
-        case '/chat/exit':
-            db.sessions.deleteSession(extra.parseCookies(req).sessionID)
-                .then(function (data) {
-                    res.writeHead(302, { Location: ''});
-                    res.end();
-                })
-                .catch(function (err) {
-                    log.error("Error at app.js/chat/deleteSession", err);
-                });
+        case '/image_sources':
+            switch (urlLinks[1]) {
+                case '/clouds':
+                    switch (urlLinks[2]) {
+                        case '/sun.png':
+                            require('./modules/send')
+                            ("sources/image_sources/clouds/sun.png", res, 'image/png');
+                            break;
+                        case '/cloud2.png':
+                            require('./modules/send')
+                            ("sources/image_sources/clouds/cloud2.png", res, 'image/png');
+                            break;
+                        case '/cloud1.png':
+                            require('./modules/send')
+                            ("sources/image_sources/clouds/cloud1.png", res, 'image/png');
+                            break;
+                        default:
+                            defaultError(req, res);
+                    }
+                    break;
+                case '/grass':
+                    switch (urlLinks[2]) {
+                        case '/grass2.png':
+                            require('./modules/send')
+                            ("sources/image_sources/grass/grass2.png", res, 'image/png');
+                            break;
+                        default:
+                            defaultError(req, res);
+                    }
+                    break;
+                case '/cat':
+                    switch (urlLinks[2]) {
+                        case '/butterfly.png':
+                            require('./modules/send')
+                            ("sources/image_sources/cat/butterfly.png", res, 'image/png');
+                            break;
+                        default:
+                            defaultError(req, res);
+                    }
+                    break;
+                case '/letters':
+                    switch (urlLinks[2]) {
+                        case '/ch.png':
+                            require('./modules/send')
+                            ("sources/image_sources/letters/ch.png", res, 'image/png');
+                            break;
+                        case '/a.png':
+                            require('./modules/send')
+                            ("sources/image_sources/letters/a.png", res, 'image/png');
+                            break;
+                        case '/t.png':
+                            require('./modules/send')
+                            ("sources/image_sources/letters/t.png", res, 'image/png');
+                            break;
+                        default:
+                            defaultError(req, res);
+                    }
+                    break;
+                case '/flags':
+                    URL = urlLinks[2];
+                    require('./modules/send')
+                    ("sources/image_sources/flags" + URL, res, 'image/png');
+                    break;
+                case '/error':
+                    switch (urlLinks[2]) {
+                        case '/0.png':
+                            require('./modules/send')
+                            ("sources/image_sources/error/0.png", res, 'image/png');
+                            break;
+                        case '/400.png':
+                            require('./modules/send')
+                            ("sources/image_sources/error/400.png", res, 'image/png');
+                            break;
+                        case '/403.jpg':
+                            require('./modules/send')
+                            ("sources/image_sources/error/403.png", res, 'image/jpg');
+                            break;
+                        case '/404.png':
+                            require('./modules/send')
+                            ("sources/image_sources/error/404.png", res, 'image/png');
+                            break;
+                        case '/502.jpg':
+                            require('./modules/send')
+                            ("sources/image_sources/error/502.png", res, 'image/jpg');
+                            break;
+                    }
+                    break;
+                case '/close.png':
+                    require('./modules/send')
+                    ("sources/image_sources/close.png", res, 'image/png');
+                    break;
+                default:
+                    defaultError(req, res);
+            }
             break;
-        case '/chat/subscribe':
-            var x = extra.parseCookies(req);
+        case '/css_sources':
+            switch (urlLinks[1]) {
+                case '/style.css':
+                    require('./modules/send')
+                    ("sources/css_sources/style.css", res, 'text/css');
+                    break;
+                case '/chat.css':
+                    require('./modules/send')
+                    ("sources/css_sources/chat.css", res, 'text/css');
+                    break;
+                case '/error.css':
+                    require('./modules/send')
+                    ("sources/css_sources/error.css", res, 'text/css');
+                    break;
+                case '/rooms.css':
+                    require('./modules/send')
+                    ("sources/css_sources/rooms.css", res, 'text/css');
+                    break;
+                default:
+                    defaultError(req, res);
+            }
+            break;
+        case '/js_sources':
+            switch (urlLinks[1]) {
+                case '/start.js':
+                    require('./modules/send')
+                    ("sources/js_sources/start.js", res, 'text/javascript');
+                    break;
+                case '/chat.js':
+                    require('./modules/send')
+                    ("sources/js_sources/chat.js", res, 'text/javascript');
+                    break;
+                case '/rooms.js':
+                    require('./modules/send')
+                    ("sources/js_sources/rooms.js", res, 'text/javascript');
+                    break;
+                default:
+                    defaultError(req, res);
+            }
+            break;
+        default:
+            defaultError(req, res);
+    }
+}).listen(4433);
 
-            db.sessions.getSession(x.sessionID)
-                .then(function(data) {
-                    if (data) {
-                        if (data.date - (new Date().getTime()) < 30000) {
+function parse(url) {
+    var x = [];
+    for (var i = 0; i < url.length; i++) {
+        if (url.charAt(i) == '/')
+            x.push('/');
+        else
+            x[x.length - 1] += url.charAt(i);
+    }
+    x.push('/');
+    return x;
+}
 
-                            db.sessions.addSession(x.login,
-                                new Date().getTime() + 86409000)
-                                .then(function(data) {
+function subscribeFunc(req, res, room) {
+    var p = extra.parseCookies(req);
 
-                                    db.sessions.deleteSession(x.sessionID)
-                                        .then(function (data1) {
+    db.sessions.getSession(p.sessionID)
+        .then(function(data) {
+            if (data) {
+                if (data.date - (new Date().getTime()) < 30000) {
 
-                                            var s = 'sessionID=' + data + '; Path=/';
-                                            var s1 = 'login=' + x.login + '; Path=/';
+                    db.sessions.addSession(p.login,
+                        new Date().getTime() + 86409000)
+                        .then(function(data) {
 
-                                            res.writeHead(200, {
-                                                'Set-Cookie': [s, s1]
-                                            });
-                                        })
-                                        .catch(function (err) {
-                                            log.error("Error at app.js/sb:", err);
-                                        });
+                            db.sessions.deleteSession(p.sessionID)
+                                .then(function (data1) {
+
+                                    var s = 'sessionID=' + data + '; Path=/; Secure';
+                                    var s1 = 'login=' + p.login + '; Path=/; Secure';
+
+                                    res.writeHead(200, {
+                                        'Set-Cookie': [s, s1]
+                                    });
                                 })
                                 .catch(function (err) {
                                     log.error("Error at app.js/sb:", err);
                                 });
-                        }
-                        chat.subscribe(req, res);
+                        })
+                        .catch(function (err) {
+                            log.error("Error at app.js/sb:", err);
+                        });
+                }
+                chat.subscribe(req, res, room);
+            } else {
+                res.writeHead(302, { Location: ''});
+                res.end();
+            }
+        })
+        .catch(function (err) {
+            log.error("Error at app.js/chat/getSession", err);
+        });
+}
+
+function chatShow(req, res, path) {
+    //if server don't contain sessionID, redirect to auth
+    db.sessions.deleteOldSessions()
+        .then(function(data) {
+            db.sessions.getSession(extra.parseCookies(req).sessionID)
+                .then(function(data) {
+                    if (data) {
+                        require('./modules/send')
+                        ("sources/html_sources" + path, res, 'text/html');
                     } else {
-                        res.writeHead(302, { Location: ''});
+                        res.writeHead(302, { Location: '/'});
                         res.end();
                     }
                 })
                 .catch(function (err) {
-                    log.error("Error at app.js/chat/getSession", err);
+                    log.error("Error at app.js/chat/getSession:", err);
                 });
-            break;
-        case '/chat/publish':
-            chat.publish(req, res);
-            chat.subscribe(req, res);
-            break;
-        case '/css_sources/style.css':
-            require('./modules/send')("sources/css_sources/style.css", res, 'text/css');
-            break;
-        case '/image_sources/letters/ch.png':
-            require('./modules/send')("sources/image_sources/letters/ch.png", res, 'image/png');
-            break;
-        case '/image_sources/letters/a.png':
-            require('./modules/send')("sources/image_sources/letters/a.png", res, 'image/png');
-            break;
-        case '/image_sources/letters/t.png':
-            require('./modules/send')("sources/image_sources/letters/t.png", res, 'image/png');
-            break;
-        case '/js_sources/start.js':
-            require('./modules/send')("sources/js_sources/start.js", res, 'text/javascript');
-            break;
-        case '/js_sources/chat.js':
-            require('./modules/send')("sources/js_sources/chat.js", res, 'text/javascript');
-            break;
-        case '/image_sources/clouds/sun.png':
-            require('./modules/send')("sources/image_sources/clouds/sun.png", res, 'image/png');
-            break;
-        case '/image_sources/clouds/cloud2.png':
-            require('./modules/send')("sources/image_sources/clouds/cloud2.png", res, 'image/png');
-            break;
-        case '/image_sources/clouds/cloud1.png':
-            require('./modules/send')("sources/image_sources/clouds/cloud1.png", res, 'image/png');
-            break;
-        case '/image_sources/grass/grass2.png':
-            require('./modules/send')("sources/image_sources/grass/grass2.png", res, 'image/png');
-            break;
-        case '/image_sources/cat/butterfly.png':
-            require('./modules/send')("sources/image_sources/cat/butterfly.png", res, 'image/png');
-            break;
-        case '/image_sources/close.png':
-            require('./modules/send')("sources/image_sources/close.png", res, 'image/png');
-            break;
-        case '/css_sources/chat.css':
-            require('./modules/send')("sources/css_sources/chat.css", res, 'text/css');
-            break;
-        default:
-            //TODO: need to redirect to error.html, maybe
-            res.statusCode = 404;
-            res.end("Page not found");
-            log.error("default case in rooter", req.url);
-    }
-}).listen(8080);
+        })
+        .catch(function (err) {
+            log.error('Error at app.js/chat/deleteOldSessions:', err);
+        });
+}
+
+function defaultError(req, res) {
+    res.statusCode = 404;
+    res.end("Page not found");
+    log.error("default case in rooter", req.url);
+}

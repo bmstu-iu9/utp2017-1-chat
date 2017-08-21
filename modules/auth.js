@@ -12,7 +12,7 @@ exports.session = function(req, res) {
                 res.end();
 
             } else {
-                res.writeHead(302, { Location: req.url + 'auth'});
+                res.writeHead(302, { Location: req.url + 'start'});
                 res.end();
             }
         })
@@ -33,8 +33,8 @@ exports.auth = function(req, res) {
                                 new Date().getTime() + 86409000)
                                 .then(function(data) {
 
-                                    var s = 'sessionID=' + data + '; Path=/';
-                                    var s1 = 'login=' + body.login + '; Path=/';
+                                    var s = 'sessionID=' + data + '; Path=/; Secure';
+                                    var s1 = 'login=' + body.login + '; Path=/; Secure';
 
                                     res.writeHead(200, {
                                         'Set-Cookie': [s, s1]

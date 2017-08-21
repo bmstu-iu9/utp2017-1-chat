@@ -22,12 +22,14 @@ exports.safeRequest = function(req, res) {
                 if (r != null)
                     body += r;
 
-                if (body.length > 1e4) {
-                    res.statusCode = 413;
-                    res.end("Message is too long");
-                    log.error("413 in reading message");
-                    reject('413: Message is too long');
-                }
+                // if (body.length > 1e4) {
+                //   res.statusCode = 413;
+                //  res.end("Message is too long");
+                // log.error("413 in reading message");
+                // reject('413: Message is too long');
+                // }
+
+                //Это ограничение пришлось убрать, т.к. файлы приходят вместе с сообщениями.
             })
             .on('end', function () { //JSON-safe function
                 try {
