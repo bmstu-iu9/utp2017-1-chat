@@ -16,19 +16,17 @@ body{
 header div img {
 	display: inline-block;
 	margin-top: 2%;
-	margin-left: 2%;
+	margin-left: 1%;
 }
 header {
 	width: 100%;
 }
 #chat_form{
-	width: 95%;
-	margin: auto;
+	width: 75%;
 	position: absolute;
-	top:10%;
+	top:14%;
 	bottom: 0;
-	right: 0;
-	left: 0;
+	right: 1%;
 	height: 78%;
 	background-color: white;
 	border-radius: 40px;
@@ -71,14 +69,13 @@ header {
 	background-color: rgb(237, 255, 171);
 }
 
-
-#out:hover, #send:hover{
+#out:hover, #send:hover, #get_out:hover{
 	background-color: rgb(190, 247, 249);
 	color: rgb(2, 1, 161);
 	border-color: rgb(2, 1, 161);
 	cursor: pointer;
 }
-#out:active, #send:active{
+#out:active, #send:active, #get_out:active{
 	background-color: rgb(140, 225, 255);
 }
 
@@ -133,4 +130,75 @@ header {
 	right: 0;
 	top: 0;
 	color: grey;
+	font-size: 15px;
+}
+.image_in_message{
+	position: relative;
+	margin-left: 13%;
+	cursor: pointer;
+}
+#popup_image{
+	display: none;
+	position: absolute;
+	z-index: 100;
+	top:0;
+	right:0;
+	left:0;
+	bottom: 0;
+	margin: auto;
+}
+#back{
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background-color: black;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	z-index: 11;
+	opacity: 0.8;
+	display: none;
+}
+#users{
+	font-family: "Courier", monospace;
+	width: 21%;
+	height:81%;
+	position: absolute;
+	left: 1%;
+	border: 5px solid green;
+	border-radius: 40px;
+	background-color: white;
+	overflow: hidden;
+}
+#online, #offline{
+	cursor: pointer;
+}
+#online_list_users, #offline_list_users{
+	display: none;
+}
+#get_out{
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	height: 18%;
+	text-align: center;
+	background-color: rgb(237, 255, 171);
+	font-size: 3vh;
+}
+#out_div_text{
+	position: absolute;
+	top:0;
+	bottom: 0;
+	right: 0;
+	left: 0;
+	margin: auto;
+	height: 50%;
+	color: green;
+}
+#lists{
+	padding-top:10px;
+	padding-left: 10px;
+	overflow-y: scroll;
+	height: 80%;
 }
