@@ -9,6 +9,7 @@ body {
     height: 100%;
     line-height: 1;
     overflow: hidden;
+    font-family: 'Open Sans', sans-serif;
     font-size: 1vw;
     background-image: url("../image_sources/error/errorshark.png"), url("../image_sources/error/poly400.png");
     background-repeat: no-repeat, no-repeat;
