@@ -268,9 +268,17 @@ https.createServer(options, function(req, res) {
                             require('./modules/send')
                             ("sources/image_sources/error/poly403.png", res, 'image/png');
                             break;
+                        case '/poly400.png':
+                            require('./modules/send')
+                            ("sources/image_sources/error/poly400.png", res, 'image/png');
+                            break;
                         case '/doge403.png':
                             require('./modules/send')
                             ("sources/image_sources/error/doge403.png", res, 'image/png');
+                            break;
+                        case '/cat400.png':
+                            require('./modules/send')
+                            ("sources/image_sources/error/cat400.png", res, 'image/png');
                             break;
                         case '/errorshark.png':
                             require('./modules/send')
@@ -312,6 +320,10 @@ https.createServer(options, function(req, res) {
                 case '/error403.css':
                     require('./modules/send')
                     ("sources/css_sources/error403.css", res, 'text/css');
+                    break;
+                case '/error400.css':
+                    require('./modules/send')
+                    ("sources/css_sources/error400.css", res, 'text/css');
                     break;
                 default:
                     defaultError(req, res);
