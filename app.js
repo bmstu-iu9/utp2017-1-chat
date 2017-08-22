@@ -264,10 +264,19 @@ https.createServer(options, function(req, res) {
                             require('./modules/send')
                             ("sources/image_sources/error/poly404.png", res, 'image/png');
                             break;
+                        case '/poly403.png':
+                            require('./modules/send')
+                            ("sources/image_sources/error/poly403.png", res, 'image/png');
+                            break;
+                        case '/doge403.png':
+                            require('./modules/send')
+                            ("sources/image_sources/error/doge403.png", res, 'image/png');
+                            break;
                         case '/errorshark.png':
                             require('./modules/send')
                             ("sources/image_sources/error/errorshark.png", res, 'image/png');
                             break;
+
                     }
                     break;
                 case '/close.png':
@@ -300,6 +309,10 @@ https.createServer(options, function(req, res) {
                     require('./modules/send')
                     ("sources/css_sources/error404.css", res, 'text/css');
                     break;
+                case '/error403.css':
+                    require('./modules/send')
+                    ("sources/css_sources/error403.css", res, 'text/css');
+                    break;
                 default:
                     defaultError(req, res);
             }
@@ -323,8 +336,12 @@ https.createServer(options, function(req, res) {
             }
             break;
         default:
-            log.debug(req.url);
-            require('./modules/send')("sources/html_sources/error404.html", res, 'text/html');
+            if(urlLinks[0].substr(0, 6) == '/error'){
+                require('./modules/send')("sources/html_sources"+urlLinks[0].substr(0, 9)+".html", res, 'text/html');
+            } else {
+                log.debug("Server error with: " + req.url);
+                require('./modules/send')("sources/html_sources/error404.html", res, 'text/html');
+            }
             //defaultError(req, res);
     }
 }).listen(4433);
