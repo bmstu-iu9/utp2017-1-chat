@@ -6,18 +6,14 @@ html {
 }
 
 body {
-    background-image: url("../image_sources/error/404.png");
-    background-position: top, bottom;
-    background-repeat: no-repeat;
-}
-
-body {
     height: 100%;
     line-height: 1;
     overflow: hidden;
-    font-family: 'Open Sans', sans-serif;
-    font-size: 20px; color: #3c3c3c;
-    background: url("../image_sources/error/shark404.png") bottom right no-repeat, #000 url("../image_sources/error/poly404.png");
+    font-size: 1vw;
+    background-image: url("../image_sources/error/errorshark.png"), url("../image_sources/error/poly404.png");
+    background-repeat: no-repeat, no-repeat;
+    background-position: bottom right, 0 0;
+    background-size: 15%, 100% 100%;
     background-attachment:fixed;
 }
 
@@ -48,8 +44,8 @@ body {
 .error404 p span {
     color:#fff;
     font-family: 'Changa One', cursive;
-    font-size: 230px;
-    line-height: 240px;
+    font-size: 20vw;
+    line-height: 23vw;
     text-shadow: 0px 0px 2px #686868,
     0px 1px 1px #ddd,
     0px 2px 1px #d6d6d6,
@@ -61,8 +57,8 @@ body {
 }
 
 .error404 p img {
-    width: 130px;
-    height: 130px;
+    width: 12vw;
+    height: 12vw;
     margin: 10px 20px;
     border-radius: 50%;
     box-shadow: 0px 0px 0px 10px white,

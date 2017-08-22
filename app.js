@@ -264,9 +264,9 @@ https.createServer(options, function(req, res) {
                             require('./modules/send')
                             ("sources/image_sources/error/poly404.png", res, 'image/png');
                             break;
-                        case '/shark404.png':
+                        case '/errorshark.png':
                             require('./modules/send')
-                            ("sources/image_sources/error/shark404.png", res, 'image/png');
+                            ("sources/image_sources/error/errorshark.png", res, 'image/png');
                             break;
                     }
                     break;
