@@ -6,7 +6,6 @@
 	<title>ChatDP</title>
 </head>
 <body>
-	<input id="inputFileToLoad" type="file" accept="image/jpeg,image/png"/>
 	<script src="../js_sources/chat.js"></script>
 	<header>
 		<div style="text-align: left;">
@@ -15,13 +14,36 @@
 			<img src="../image_sources/letters/t.png" width="6%" height="6%">
 		</div>
 	</header>
+	<div id="users">
+		<div id="lists">
+			<div id="online">Онлайн</div>
+			<div id="online_list_users">
+				<!-- Пользователь находится в блоке DIV с классом user-->
+			</div>
+			<div id="offline">Оффлайн</div>
+			<div id="offline_list_users">
+				<!-- Пользователь находится в блоке DIV с классом user-->
+			</div>
+		</div>
+		<div id="out">
+			<div id="out_div_text">Выйти</div>
+		</div>
+	</div>
 	<div id="chat_form">
 		<div id="dialog"></div>
 		<div id="menu">
-			<div id="out"><div>Выйти</div></div>
+			<div id="get_out">
+				<div class="fileform">
+					<div id="selectbutton">Загрузить фото</div>
+					<div id="indicator">Файл</div>
+				</div>
+				<input type="file" name="upload" id="inputFileToLoad"  accept="image/jpeg,image/png"/>
+			</div>
 			<textarea id="message" cols="20" rows="4"></textarea>
 			<div id="send"><div>Отправить</div></div>
 		</div>
 	</div>
+	<div id="back"></div>
+	<img id="popup_image"/>
 </body>
 </html>
