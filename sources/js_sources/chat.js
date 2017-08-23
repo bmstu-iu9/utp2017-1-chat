@@ -2,6 +2,7 @@ window.onload = function() {
     oldMessages();
     getUsers();
     subscribe();
+    document.getElementById("message").focus();
     setTimeout(function() {
         var ch = document.getElementById("dialog");
         ch.scrollTop = 1000000;
@@ -11,6 +12,9 @@ window.onload = function() {
 	document.getElementById("message").addEventListener("keypress", function(e) {
 		if((event.ctrlKey) && ((event.keyCode == 0xA)||(event.keyCode == 0xD))){
 			publish();
+            setTimeout(function() {
+                document.getElementById("message").value = "";
+            }, 1);
 		}
 	}, false);
 	document.getElementById("back").addEventListener("click", function() {
@@ -39,15 +43,13 @@ window.onload = function() {
     }, false);
 };
 var room = 0; //stub
-
 function publish() {
     var message = document.getElementById("message").value.trim();
 
     var inputFileToLoad = document.getElementById("inputFileToLoad").files[0];
 
     if (inputFileToLoad) {
-
-        var fileReader = new FileReader(); //эта штука может подгружать миниатюры! Для фронтенда это можнт быть полезно
+        var fileReader = new FileReader();
 
         fileReader.addEventListener("load", function() {
             var attachment = fileReader.result.split("base64,")[1];
@@ -73,7 +75,6 @@ function publish() {
         newInput.id = oldInput.id;
 
         oldInput.parentNode.replaceChild(newInput, oldInput);
-
     } else {
 
         var xhr = new XMLHttpRequest();
@@ -85,7 +86,7 @@ function publish() {
 
         document.getElementById("message").value = "";
     }
-
+    document.getElementById("message").focus();
     return false;
 }
 
@@ -223,12 +224,12 @@ function get_message(message){
                         fullImg.setAttribute("height", height+"px");
                     }
                 }, false);
+                document.getElementById("dialog").scrollTop = 1000000;
             }
         }
         document.getElementById("dialog").appendChild(divMessage);
-        var ch = document.getElementById("dialog");
-        ch.scrollTop = 1000000;
     }
+    document.getElementById("dialog").scrollTop = 1000000;
 }
 function get_dimensions(el) {
     if (el.naturalWidth!=undefined) {

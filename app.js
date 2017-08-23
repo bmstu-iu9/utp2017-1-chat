@@ -259,10 +259,51 @@ https.createServer(options, function(req, res) {
                             require('./modules/send')
                             ("sources/image_sources/error/404.png", res, 'image/png');
                             break;
-                        case '/502.jpg':
+                        case '/cat404.jpg':
                             require('./modules/send')
-                            ("sources/image_sources/error/502.png", res, 'image/jpg');
+                            ("sources/image_sources/error/cat404.jpg", res, 'image/jpg');
                             break;
+                        case '/poly404.png':
+                            require('./modules/send')
+                            ("sources/image_sources/error/poly404.png", res, 'image/png');
+                            break;
+                        case '/poly403.png':
+                            require('./modules/send')
+                            ("sources/image_sources/error/poly403.png", res, 'image/png');
+                            break;
+                        case '/poly400.png':
+                            require('./modules/send')
+                            ("sources/image_sources/error/poly400.png", res, 'image/png');
+                            break;
+                        case '/poly502.png':
+                            require('./modules/send')
+                            ("sources/image_sources/error/poly502.png", res, 'image/png');
+                            break;
+                        case '/poly503.png':
+                            require('./modules/send')
+                            ("sources/image_sources/error/poly503.png", res, 'image/png');
+                            break;
+                        case '/doge403.png':
+                            require('./modules/send')
+                            ("sources/image_sources/error/doge403.png", res, 'image/png');
+                            break;
+                        case '/cat400.png':
+                            require('./modules/send')
+                            ("sources/image_sources/error/cat400.png", res, 'image/png');
+                            break;
+                        case '/cat502.png':
+                            require('./modules/send')
+                            ("sources/image_sources/error/cat502.png", res, 'image/png');
+                            break;
+                        case '/cat503.png':
+                            require('./modules/send')
+                            ("sources/image_sources/error/cat503.png", res, 'image/png');
+                            break;
+                        case '/errorshark.png':
+                            require('./modules/send')
+                            ("sources/image_sources/error/errorshark.png", res, 'image/png');
+                            break;
+
                     }
                     break;
                 case '/close.png':
@@ -291,6 +332,26 @@ https.createServer(options, function(req, res) {
                     require('./modules/send')
                     ("sources/css_sources/rooms.css", res, 'text/css');
                     break;
+                case '/error404.css':
+                    require('./modules/send')
+                    ("sources/css_sources/error404.css", res, 'text/css');
+                    break;
+                case '/error403.css':
+                    require('./modules/send')
+                    ("sources/css_sources/error403.css", res, 'text/css');
+                    break;
+                case '/error400.css':
+                    require('./modules/send')
+                    ("sources/css_sources/error400.css", res, 'text/css');
+                    break;
+                case '/error502.css':
+                    require('./modules/send')
+                    ("sources/css_sources/error502.css", res, 'text/css');
+                    break;
+                case '/error503.css':
+                    require('./modules/send')
+                    ("sources/css_sources/error503.css", res, 'text/css');
+                    break;
                 default:
                     defaultError(req, res);
             }
@@ -314,7 +375,13 @@ https.createServer(options, function(req, res) {
             }
             break;
         default:
-            defaultError(req, res);
+            if(urlLinks[0].substr(0, 6) == '/error'){
+                require('./modules/send')("sources/html_sources"+urlLinks[0].substr(0, 9)+".html", res, 'text/html');
+            } else {
+                log.debug("Server error with: " + req.url);
+                require('./modules/send')("sources/html_sources/error404.html", res, 'text/html');
+            }
+            //defaultError(req, res);
     }
 }).listen(4433);
 

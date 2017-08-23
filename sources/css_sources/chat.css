@@ -50,7 +50,7 @@ header {
 	height:18%;
 	background-color: green;
 }
-#out div, #send div{
+#out div, #send div, #get_out .fileform{
 	position: absolute;
 	width: 100%;
 	height: 50%;
@@ -61,7 +61,7 @@ header {
 	right: 0;
 	margin: auto;
 }
-#out, #send{
+#out, #send, #get_out{
 	text-align: center;
 	position: absolute;
 	width:25%;
@@ -177,7 +177,7 @@ header {
 #online_list_users, #offline_list_users{
 	display: none;
 }
-#get_out{
+#out{
 	position: absolute;
 	bottom: 0;
 	width: 100%;
@@ -201,4 +201,43 @@ header {
 	padding-left: 10px;
 	overflow-y: scroll;
 	height: 80%;
+}
+.fileform {
+	color: green;
+	cursor: pointer;
+	height: 100%;
+	overflow: hidden;
+	padding: 2px;
+	position: relative;
+	text-align: left;
+	vertical-align: middle;
+	width: 100%;
+}
+
+.fileform #selectbutton {
+	cursor: pointer;
+	font-size: 3vh;
+	height: 20px;
+	padding: 2px 6px;
+	text-align: center;
+	vertical-align: middle;
+	width: 100%;
+}
+
+#inputFileToLoad{
+	cursor: pointer;
+	position:absolute;
+	top:0;
+	left:0;
+	width:100%;
+	height: 100%;
+	-moz-opacity: 0;
+	filter: alpha(opacity=0);
+	opacity: 0;
+	font-size: 150px;
+	z-index:20;
+}
+#indicator{
+	text-align: center;
+	margin-top: 5px;
 }
