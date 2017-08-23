@@ -1,5 +1,6 @@
 window.onload = function() {
     oldMessages();
+    getUsers();
     subscribe();
     setTimeout(function() {
         var ch = document.getElementById("dialog");
@@ -250,8 +251,50 @@ function get_dimensions(el) {
         return false;
     }
 }
+
 function max(a, b) {
     if(a > b)
         return a;
     return b;
+}
+
+function getUsers() {
+    const xhr = new XMLHttpRequest();
+
+    xhr.open("GET", window.location.pathname + "/get_users", true);
+
+    xhr.send();
+
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4) {
+            if (xhr.status == 200) {
+                let x = JSON.parse(this.responseText);
+                var userID = 'user_' + x.text;
+
+                if (x.msg == "add") {
+                    if (!document.getElementById(userID)) {
+                        var divUsers = document.createElement('div');
+                        divUsers.className = 'user';
+                        divUsers.id = userID;
+                        divUsers.appendChild(document.createTextNode(x.text))
+                        document.getElementById('online_list_users').appendChild(divUsers);
+                    }
+                } else if (x.msg == "delete") {
+                    var del = document.getElementById(userID);
+                    del.parentNode.removeChild(del);
+                } else
+                    window.location.replace(window.location.origin + '/error'
+                        + xhr.statusCode);
+
+                getUsers();
+
+            } else {
+                setTimeout(subscribe, 100);
+            }
+        }
+    };
+
+    xhr.onabort = function() { //this function let page not to fall after error
+        setTimeout(subscribe, 100);
+    };
 }
