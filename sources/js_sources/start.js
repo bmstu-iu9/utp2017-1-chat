@@ -1,3 +1,5 @@
+"use strict";
+
 window.onload = function() {
 	document.getElementById("Reg").addEventListener("click", function() {
 		document.getElementById("back").style.display="block";
