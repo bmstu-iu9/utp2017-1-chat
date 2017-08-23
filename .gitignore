@@ -3,5 +3,5 @@
 /node_modules/db/Users/users.json
 /node_modules/db/Dialogs/dialogs.json
 /node_modules/db/Dialogs/news.json
-/.DS_Store/.DS_Store
-/sources/.DS_Store/.DS_Store
+**/.DS_Store
+/temp/
