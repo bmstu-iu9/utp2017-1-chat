@@ -248,18 +248,23 @@ function exit() {
 
     xhr.send();
 
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4) {
-            if (xhr.status == 302) {
-                window.location.replace(window.location.origin
-                    + xhr.getResponseHeader('Location'));
+    /*
+     ВНИМАНИЕ!! Тут костыль, который является на данный момент единственным
+     вариантом исправления бага #45 с кнопкой выхода в FireFox.
+     */
 
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4) {
+            ///if (xhr.status == 302) {
+            if (xhr.status == 200) {
+                //window.location.replace(window.location.origin + xhr.getResponseHeader('Location'));
+                window.location.replace(window.location.origin + '');
             } else if (xhr.status != 200){
                 window.location.replace(window.location.origin + '/error'
                     + xhr.statusCode);
             }
         }
-    };
+    }
 }
 
 
