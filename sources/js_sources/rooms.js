@@ -1,3 +1,5 @@
+"use strict";
+
 window.onload = function() {
 
     loadRooms();
@@ -81,7 +83,7 @@ function getNews(crd) {
 
             } else {
                 document.getElementById("nList").innerHTML = "";
-                weather = {};
+                let weather = {};
 
                 var img = new Image(413, 300);
                 img.src = "https://maps.googleapis.com/maps/api/staticmap?center=" + crd.latitude + "," + crd.longitude +
