@@ -143,8 +143,8 @@ function addRoom() {
     div.appendChild(input);
     x.appendChild(div);
 
-    input.addEventListener("keypress", function(e) {
-        if (event.keyCode == 0xD) {
+    input.addEventListener("keypress", function(event) {
+        if (event.keyCode == 0x0D) {
             title = input.value;
             x.removeChild(div);
 
