@@ -1,5 +1,8 @@
+"use strict";
+
 window.onload = function() {
     oldMessages();
+    getUsers();
     subscribe();
     document.getElementById("message").focus();
     setTimeout(function() {
@@ -22,17 +25,14 @@ window.onload = function() {
         document.getElementById("popup_image").setAttribute("width", "");
         document.getElementById("popup_image").setAttribute("height", "");
     }, false);
+	document.getElementById("online").onmouseover = function() {
+	    this.setAttribute("style", "background-color:grey;");
+    }
+    document.getElementById("online").onmouseout = function() {
+	    this.removeAttribute("style", "background-color:grey;");
+    }
     document.getElementById("online").addEventListener("click", function(e) {
         var element = document.getElementById("online_list_users");
-        if(element.style.display == "none" || element.style.display == ""){
-            element.style.display = "block";
-            element.getElementsByClassName("user")[element.getElementsByClassName("user").length-1].scrollIntoView(false);
-        }else{
-            element.style.display = "none";
-        }
-    }, false);
-    document.getElementById("offline").addEventListener("click", function(e) {
-        var element = document.getElementById("offline_list_users");
         if(element.style.display == "none" || element.style.display == ""){
             element.style.display = "block";
             element.getElementsByClassName("user")[element.getElementsByClassName("user").length-1].scrollIntoView(false);
@@ -251,8 +251,50 @@ function get_dimensions(el) {
         return false;
     }
 }
+
 function max(a, b) {
     if(a > b)
         return a;
     return b;
+}
+
+function getUsers() {
+    const xhr = new XMLHttpRequest();
+
+    xhr.open("GET", window.location.pathname + "/get_users", true);
+
+    xhr.send();
+
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4) {
+            if (xhr.status == 200) {
+                let x = JSON.parse(this.responseText);
+                var userID = 'user_' + x.text;
+
+                if (x.msg == "add") {
+                    if (!document.getElementById(userID)) {
+                        var divUsers = document.createElement('div');
+                        divUsers.className = 'user';
+                        divUsers.id = userID;
+                        divUsers.appendChild(document.createTextNode(x.text))
+                        document.getElementById('online_list_users').appendChild(divUsers);
+                    }
+                } else if (x.msg == "delete") {
+                    var del = document.getElementById(userID);
+                    del.parentNode.removeChild(del);
+                } else
+                    window.location.replace(window.location.origin + '/error'
+                        + xhr.statusCode);
+
+                getUsers();
+
+            } else {
+                setTimeout(subscribe, 100);
+            }
+        }
+    };
+
+    xhr.onabort = function() { //this function let page not to fall after error
+        setTimeout(subscribe, 100);
+    };
 }
