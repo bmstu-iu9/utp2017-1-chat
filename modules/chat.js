@@ -3,6 +3,7 @@ var extra = require('./extra');
 var db = require('db');
 
 var rooms = [];
+var roomsRes = [];
 
 /**
  * Long-polling mechanism.
@@ -26,8 +27,18 @@ exports.subscribe = function(req, res, room) {
         rooms[room].push(res);
     }
 
+    roomsRes[room].forEach(function (res) {
+        res.end(JSON.stringify({msg: 'add', text: extra.parseCookies(req).login}))
+    });
+
     res.on('close', function() {
         rooms[room].splice(rooms[room].indexOf(res), 1);
+
+        roomsRes[room].forEach(function (res) {
+            res.end(JSON.stringify({
+                msg: 'delete',
+                text: extra.parseCookies(req).login}))
+        });
     });
 
 };
@@ -80,7 +91,7 @@ exports.publish = function(req, res, room) {
 };
 
 exports.getUsersInRoom = function (id) {
-    return rooms[id];
+    return JSON.stringify(rooms[id]);
 };
 
 var saveImage = function (image, id) {
@@ -91,4 +102,13 @@ var saveImage = function (image, id) {
         });
     });
 
+};
+
+exports.usersSave = function(req, res, room) {
+    if (roomsRes[room])
+        roomsRes[room].push(res);
+    else {
+        roomsRes[room] = [];
+        roomsRes[room].push(res);
+    }
 };

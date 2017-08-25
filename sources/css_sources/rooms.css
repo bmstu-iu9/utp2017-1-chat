@@ -9,15 +9,15 @@ body{
     float: right;
     border: 3px ridge black;
     width: 23%;
-    height: 91vh;
+    height: 93vh;
     background-color: aqua;
     border-radius: 20px;
     word-wrap: break-word;
 }
 #header {
-    font-size: 40px;
+    font-size: 8vh;
     text-align: center;
-    padding: 10px;
+    padding: 2vh;
     border-bottom: 3px ridge black;
 }
 #container {
@@ -27,9 +27,9 @@ body{
     width: 75%;
 }
 #addRoom, #exit, #user{
-    font-size: 40px;
+    font-size: 8vh;
     text-align: center;
-    padding: 10px;
+    padding: 2vh;
     float: right;
     display: inline-block;
     word-wrap: break-word;
@@ -63,23 +63,23 @@ body{
 #addRoom:active, #exit:active, .delete:active, .room:active {
     background-color: rgb(140, 225, 255);
 }
-.line {
+.line, .div {
     position: static;
     width: 100%;
     margin: 10px;
     clear: both;
 }
-.room, .delete {
-    font-size: 25px;
+.room, .delete, .input {
+    font-size: 7vh;
     text-align: center;
-    padding: 5px;
+    padding: 0.5vh;
     border-radius: 5px;
     border-bottom: 1px ridge black;
     margin-top: 5px;
     margin-left: 10px;
     margin-right: 15px;
     float: left;
-    display: inline-block;
+    display: block;
     word-wrap: break-word;
 }
 .delete {

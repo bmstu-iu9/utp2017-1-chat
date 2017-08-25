@@ -1,3 +1,5 @@
+"use strict";
+
 window.onload = function() {
 
     loadRooms();
@@ -25,7 +27,7 @@ function getWeather(crd) {
                     reject(this.status);
                 }
             }
-        }
+        };
 
         request.send();
     });
@@ -54,34 +56,14 @@ function getNews(crd) {
                 loadNews(data);
             }
 
-            else if (!!!crd.latitude) {
-                document.getElementById("nList").innerHTML = "<p>Произошла ошибка при определении вашего " +
-                    "местонахождения, поэтому погода и карта не будут прогружены</p>";
+            else if (!crd.latitude) {
+                document.getElementById("nList").innerHTML = "<p align=\"center\">Произошла ошибка при определении вашего " +
+                    "местонахождения, поэтому погода и карта не будут прогружены!</p>";
                 loadNews(data);
-
-            } else if (crd.latitude == 55.66372873 && crd.longitude == 37.60740817) {
-                document.getElementById("nList").innerHTML = "ПОЗДРАВЛЯЮ! ВЫ НАХОДИТЕСЬ НА САМЫХ ЛУЧШИХ ТЕРРИТОРИЯХ НА ЭТОЙ ЧЕРТОВОЙ ЗЕМЛЕ!";
-
-                var img = new Image(413, 200);
-                img.src = "https://maps.googleapis.com/maps/api/staticmap?center=" + crd.latitude + "," + crd.longitude +
-                    "&zoom=16&size=413x200&path=weight:3%7Ccolor:blue%7Cenc:{coaHnetiVjM??_SkM??~R&" +
-                    "key=AIzaSyDbksHMbdwjiNJj-JKp8O7vJd-Hfa4Ez94";
-                document.getElementById("nList").appendChild(img);
-
-                var img2 = new Image(413, 200);
-                img2.src = "../image_sources/flags/NAHIM.png";
-                document.getElementById("nList").appendChild(img2);
-
-                var msg = document.createElement('div');
-                msg.className = 'news';
-                msg.innerHTML = "Ваша страна: NAHIM (also known as the center of the world)" +
-                    "<br>" + "Температура: 30 (like temperature in heaven)" + "<br>" + "Погода: always the best";
-                document.getElementById("nList").appendChild(msg);
-
 
             } else {
                 document.getElementById("nList").innerHTML = "";
-                weather = {};
+                let weather = {};
 
                 var img = new Image(413, 300);
                 img.src = "https://maps.googleapis.com/maps/api/staticmap?center=" + crd.latitude + "," + crd.longitude +
@@ -134,28 +116,47 @@ function getGeolocation() {
 
     function success(pos) {
         getNews(pos.coords);
-    };
+    }
 
     function error(err) {
         console.warn(`ERROR(${err.code}): ${err.message}`);
-        if (err.code == 1) {
-            alert("Вы не разрешили доступ к своей геопозиции, поэтому я буду считать, что вы на Нахимовском проспекте");
-            getNews({latitude: 55.66372873, longitude: 37.60740817 })
-        } else getNews({});
-    };
+ 	getNews({});
+    }
 
-     navigator.geolocation.getCurrentPosition(success, error, options);
-};
+    navigator.geolocation.getCurrentPosition(success, error, options);
+}
 
 
 function addRoom() {
-    xhrAddRoom()
-        .then(function (data) {
-            reshowRooms();
-        })
-        .catch(function (err) {
-            window.location.replace(window.location.origin + '/error' + err);
-        });
+    let title;
+
+    let x = document.getElementById("rooms");
+    x.scrollTop = 1000000;
+
+    let div = document.createElement('div');
+    div.className = 'div';
+
+    let input = document.createElement('input');
+    input.className = 'input';
+    input.type = 'text';
+
+    div.appendChild(input);
+    x.appendChild(div);
+
+    input.addEventListener("keypress", function(e) {
+        if (event.keyCode == 0xD) {
+            title = input.value;
+            x.removeChild(div);
+
+            xhrAddRoom(title)
+                .then(function (data) {
+                    reshowRooms();
+                })
+                .catch(function (err) {
+                    window.location.replace(window.location.origin + '/error' + err);
+                });
+        }
+    }, false);
 }
 
 function deleteRoom(id) {
@@ -198,7 +199,10 @@ function showRoom(data) {
         }, false);
     }
 
-    divRoom.appendChild(document.createTextNode(data.title));
+    if (data.title)
+        divRoom.appendChild(document.createTextNode(data.title));
+    else
+        divRoom.appendChild(document.createTextNode(data.id));
     divLine.appendChild(divRoom);
 
     if (data.author == getCookieValue("login")) {
@@ -290,10 +294,7 @@ function xhrGetNews(crd) {
     })
 }
 
-function xhrAddRoom() {
-
-    var title = prompt("Введите название комнаты ", ""); //TODO: Frontend
-    if (!title) return;
+function xhrAddRoom(title) {
 
     return new Promise(function(response, reject) {
         var xhr = new XMLHttpRequest();
