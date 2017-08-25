@@ -69,13 +69,12 @@ function getNews(crd) {
                 var height = 300;
                 img.setAttribute("width", width);
                 img.setAttribute("height", height);
-                img.setAttribute("align", "middle");
                 img.setAttribute("vspace", 10);
                 img.setAttribute("hspace", 50);
 
 
                 img.src = "https://maps.googleapis.com/maps/api/staticmap?center=" + crd.latitude + "," + crd.longitude +
-                    "&zoom=10&size=" + width + "x" + height + "&path=weight:3%7Ccolor:blue%7Cenc:{coaHnetiVjM??_SkM??~R&" +
+                    "&zoom=11&size=" + width + "x" + height + "&path=weight:3%7Ccolor:blue%7Cenc:{coaHnetiVjM??_SkM??~R&" +
                     "key=AIzaSyDbksHMbdwjiNJj-JKp8O7vJd-Hfa4Ez94";
                 document.getElementById("nList").appendChild(img);
 
@@ -90,7 +89,6 @@ function getNews(crd) {
                         img.setAttribute("width", 64);
                         img.setAttribute("height", 64);
                         img.setAttribute("hspace", 180);
-                        img.setAttribute("align", "bottom");
                         img.src = "../image_sources/flags/" + weather.country + ".png";
                         document.getElementById("nList").appendChild(img);
                     })
