@@ -154,7 +154,14 @@ function getGeolocation() {
 }
 
 
+function infoAboutTooManyRooms() {
+    alert("Вы собираетесь добавить еще одну комнату, но сначала разберитесь со старой!");
+}
+
 function addRoom() {
+    document.getElementById("addRoom").removeEventListener("click", addRoom, false);
+    document.getElementById("addRoom").addEventListener("click", infoAboutTooManyRooms, false);
+
     let title;
 
     let x = document.getElementById("rooms");
@@ -174,6 +181,8 @@ function addRoom() {
         if (event.keyCode == 0x0D) {
             title = input.value;
             x.removeChild(div);
+            document.getElementById("addRoom").removeEventListener("click", infoAboutTooManyRooms, false)
+            document.getElementById("addRoom").addEventListener("click", addRoom, false);
 
             xhrAddRoom(title)
                 .then(function (data) {
