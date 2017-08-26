@@ -36,38 +36,42 @@ window.onload = function() {
         this.removeAttribute("style", "border:1px solid red;");
         var del = document.getElementById('alert_text_reg_login');
         del.parentNode.removeChild(del);
-    }
+    };
+
     document.getElementById("password").onclick = function() {
         this.removeAttribute("style", "border:1px solid red;");
-        var del = document.getElementById('alert_text_reg');
+        let del = document.getElementById('alert_text_reg');
         del.parentNode.removeChild(del);
-    }
+    };
+
     document.getElementById("repeat_password").onclick = function() {
         this.removeAttribute("style", "border:1px solid red;");
-        var del = document.getElementById('alert_text_reg');
+        let del = document.getElementById('alert_text_reg');
         del.parentNode.removeChild(del);
-    }
+    };
+
     document.getElementById("login1").onclick = function() {
         this.removeAttribute("style", "border:1px solid red;");
-        var del = document.getElementById('alert_text_auth');
+        let del = document.getElementById('alert_text_auth');
         del.parentNode.removeChild(del);
-    }
+    };
+
     document.getElementById("password1").onclick = function() {
         this.removeAttribute("style", "border:1px solid red;");
-        var del = document.getElementById('alert_text_auth');
+        let del = document.getElementById('alert_text_auth');
         del.parentNode.removeChild(del);
     }
 };
 
-var origin = window.location.origin;
+const origin = window.location.origin;
 /**
  * Registration functions
  */
 function registration() {
 
-    var login = document.getElementById("login").value;
-    var password = document.getElementById("password").value;
-    var passwordRepeat = document.getElementById("repeat_password").value;
+    let login = document.getElementById("login").value;
+    let password = document.getElementById("password").value;
+    let passwordRepeat = document.getElementById("repeat_password").value;
 
     if (password === passwordRepeat && password.length > 5 && login.length != 0 ) {
         getSalt()
@@ -80,12 +84,17 @@ function registration() {
                         if (err1 == 401) {
                             //Добавление красной рамки и сообщения
                             document.getElementById("login").value = "";
-                            document.getElementById("login").setAttribute("style", "border:1px solid red;");
-                            var divAlert = document.createElement('div');
+                            document.getElementById("login")
+                                .setAttribute("style", "border:1px solid red;");
+
+                            let divAlert = document.createElement('div');
                             divAlert.setAttribute("style", "color:red");
                             divAlert.id = 'alert_text_reg_login';
-                            divAlert.appendChild(document.createTextNode("Логин уже используется"));
-                            document.getElementById("registration_form").appendChild(divAlert);
+
+                            divAlert.appendChild(document
+                                .createTextNode("Логин уже используется"));
+                            document.getElementById("registration_form")
+                                .appendChild(divAlert);
 
                         } else {
                             window.location.replace(origin + '/error' + err1);
@@ -97,17 +106,22 @@ function registration() {
             });
     } else {
         //Добавление красной рамки и сообщения
-        document.getElementById("password").setAttribute("style", "border:1px solid red;");
-        document.getElementById("repeat_password").setAttribute("style", "border:1px solid red;");
-        var divAlert = document.createElement('div');
+        document.getElementById("password")
+            .setAttribute("style", "border:1px solid red;");
+        document.getElementById("repeat_password")
+            .setAttribute("style", "border:1px solid red;");
+
+        let divAlert = document.createElement('div');
         divAlert.setAttribute("style", "color:red");
         divAlert.id = 'alert_text_reg';
+
         if (password !== passwordRepeat) {
             divAlert.appendChild(document.createTextNode("Пароли не совпадают"));
         }
         else if (password.length < 6) {
             divAlert.appendChild(document.createTextNode("Пароль слишком короткий"));
         }
+
         document.getElementById("registration_form").appendChild(divAlert);
         document.getElementById("password").value = "";
         document.getElementById("repeat_password").value = "";
@@ -116,7 +130,7 @@ function registration() {
 
 function getSalt() {
     return new Promise(function(response, reject) {
-        var xhr = new XMLHttpRequest();
+        let xhr = new XMLHttpRequest();
 
         xhr.open("POST", '/start/r_connect', true);
 
@@ -142,7 +156,7 @@ function getSalt() {
 
 function reg(login, password, salt) {
     return new Promise(function(response, reject) {
-        var xhr = new XMLHttpRequest();
+        let xhr = new XMLHttpRequest();
 
         xhr.open("POST", '/start/r_enter', true);
 
@@ -153,7 +167,7 @@ function reg(login, password, salt) {
         xhr.onreadystatechange = function() {
             if (xhr.readyState == 4) {
                 if (xhr.status == 200) {
-                    var x = JSON.parse(this.responseText);
+                    let x = JSON.parse(this.responseText);
                     response(x.text);
 
                 } else {
@@ -173,8 +187,8 @@ function reg(login, password, salt) {
  * Authentication functions
  */
 function authentication() {
-    var login = document.getElementById("login1").value;
-    var password = document.getElementById("password1").value;
+    let login = document.getElementById("login1").value;
+    let password = document.getElementById("password1").value;
 
     /**
      * This block of promises takes a login and session ID,
@@ -191,7 +205,6 @@ function authentication() {
             if (!data) {
                 document.getElementById("login1").value = "";
                 document.getElementById("password1").value = "";
-                //TODO: message about the absence of a user in db
 
             }
             else {
@@ -202,13 +215,18 @@ function authentication() {
                     .catch(function (err1) {
                         if (err1 == 401) {
                             //Добавление красной рамки и сообщения
-                            document.getElementById("login1").setAttribute("style", "border:1px solid red;");
-                            document.getElementById("password1").setAttribute("style", "border:1px solid red;");
-                            var divAlert = document.createElement('div');
+                            document.getElementById("login1")
+                                .setAttribute("style", "border:1px solid red;");
+                            document.getElementById("password1")
+                                .setAttribute("style", "border:1px solid red;");
+                            let divAlert = document.createElement('div');
                             divAlert.setAttribute("style", "color:red");
                             divAlert.id = 'alert_text_auth';
-                            divAlert.appendChild(document.createTextNode("Неверный логин или пароль"));
-                            document.getElementById("enter_form").appendChild(divAlert);
+
+                            divAlert.appendChild(document
+                                .createTextNode("Неверный логин или пароль"));
+                            document.getElementById("enter_form")
+                                .appendChild(divAlert);
                             document.getElementById("login1").value = "";
                             document.getElementById("password1").value = "";
 
@@ -226,7 +244,7 @@ function authentication() {
 
 function getSalt1(login) {
     return new Promise(function(response, reject) {
-        var xhr = new XMLHttpRequest();
+        let xhr = new XMLHttpRequest();
 
         xhr.open("POST", '/start/a_connect', true);
 
@@ -252,7 +270,7 @@ function getSalt1(login) {
 
 function authCheck(login, password) {
     return new Promise(function(response, reject) {
-        var xhr = new XMLHttpRequest();
+        let xhr = new XMLHttpRequest();
 
         xhr.open("POST", '/start/a_enter', true);
 
@@ -277,10 +295,10 @@ function authCheck(login, password) {
 }
 
 function sha(password, salt) {
-    var n = salt.substr(0, 1);
+    let n = salt.substr(0, 1);
     salt = salt.substr(1, salt.length - 1);
 
-    for (var i = 0; i < n; i++)
+    for (let i = 0; i < n; i++)
         password = keccak512(password + salt)
     return password;
 }

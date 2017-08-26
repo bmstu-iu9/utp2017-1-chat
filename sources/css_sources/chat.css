@@ -171,13 +171,14 @@ header {
 	background-color: white;
 	overflow: hidden;
 }
-#online, #offline{
-	cursor: pointer;
-        font-weight: bold;
-        font-color: black;
+#online{
+	font-size: 8vh;
+        text-align: center;
+        padding: 2vh;
+        border-bottom: 3px ridge black;
 }
-#online_list_users, #offline_list_users{
-	display: none;
+#online_list_users{
+        padding-left: 10px;
 }
 #out{
 	position: absolute;
@@ -200,7 +201,6 @@ header {
 }
 #lists{
 	padding-top:10px;
-	padding-left: 10px;
 	overflow-y: scroll;
 	height: 80%;
 }
