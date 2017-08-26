@@ -1,9 +1,11 @@
-var log = require('tech').log;
-var extra = require('./extra');
-var db = require('db');
+const fs = require('fs');
 
-var rooms = [];
-var roomsRes = [];
+const log = require('tech').log;
+const extra = require('./extra');
+const db = require('db');
+
+const rooms = [];
+const roomsRes = [];
 
 /**
  * Long-polling mechanism.
@@ -53,8 +55,8 @@ exports.publish = function(req, res, room) {
     extra.safeRequest(req, res)
         .then(function (data) {
 
-            var name = require('./extra').parseCookies(req).login;
-            var time = (new Date(new Date().getTime()).toLocaleTimeString());
+            let name = require('./extra').parseCookies(req).login;
+            let time = (new Date(new Date().getTime()).toLocaleTimeString());
             if (data.attachment){
                 data.id = name + Date.now();
                 saveImage(data.attachment, data.id);
@@ -62,7 +64,7 @@ exports.publish = function(req, res, room) {
             }
 
             db.dialogs.addMessage(room, name, data.message, time, data.id)
-                .then(function (data1) {
+                .then(function () {
                     if (data.id) {
                         rooms[room].forEach(function (res) {
                             res.end(JSON.stringify({
@@ -94,15 +96,14 @@ exports.getUsersInRoom = function (id) {
     return JSON.stringify(rooms[id]);
 };
 
-var saveImage = function (image, id) {
-    var fs = require('fs');
+function saveImage(image, id) {
     fs.mkdir("./temp", function () {
         fs.writeFile('./temp/' + id + '.png', Buffer(image, 'Base64'),  function (err) {
             if (err) log.error("chat.js/saveImage: " + err);
         });
     });
 
-};
+}
 
 exports.usersSave = function(req, res, room) {
     if (roomsRes[room])

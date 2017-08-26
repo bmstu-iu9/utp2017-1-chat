@@ -1,30 +1,32 @@
-var http = require('http');
-var https = require('https');
-var fs = require('fs');
+"use strict";
 
-var chat = require('./modules/chat');
-var auth = require('./modules/auth');
-var reg = require('./modules/reg');
+const http = require('http');
+const https = require('https');
+const fs = require('fs');
 
-var extra = require('./modules/extra');
+const chat = require('./modules/chat');
+const auth = require('./modules/auth');
+const reg = require('./modules/reg');
 
-var config = require('config');
-var db = require('db');
+const extra = require('./modules/extra');
 
-var tech = require('tech').server_tech;
-var log = require('tech').log;
+const config = require('config');
+const db = require('db');
+
+const tech = require('tech').server_tech;
+const log = require('tech').log;
 
 db.sessions.connect();
 db.users.connect();
 db.dialogs.connect();
 
-var options = {
+const options = {
     key: fs.readFileSync('keys/key.pem'),
     cert: fs.readFileSync('keys/cert.pem')
 };
 
 https.createServer(options, function(req, res) {
-    var urlLinks = parse(req.url);
+    const urlLinks = parse(req.url);
 
     switch (urlLinks[0]) {
         case '/':
@@ -62,7 +64,7 @@ https.createServer(options, function(req, res) {
                     break;
                 case '/news':
                     extra.safeRequest(req, res);
-       //                 .then(UserRefreshCoords);
+
                     db.dialogs.getNews()
                         .then(data => { res.end(JSON.stringify(data)); })
                         .catch(err => { log.error('Error at app.js/chat/getNews:', err) });
@@ -128,7 +130,7 @@ https.createServer(options, function(req, res) {
                     break;
                 case '/exit':
                     db.sessions.deleteSession(extra.parseCookies(req).sessionID)
-                        .then(function (data) {
+                        .then(function () {
                             // КОСТЫЛЬ res.writeHead(302, { Location: '' });
                             res.end();
                         })
@@ -138,7 +140,7 @@ https.createServer(options, function(req, res) {
                     break;
                 default:
                     if (urlLinks[1].substr(0, 5) == '/room') {
-                        var room = urlLinks[1].substr(5, urlLinks[1].length - 5);
+                        let room = urlLinks[1].substr(5, urlLinks[1].length - 5);
                         switch (urlLinks[2]) {
                             case '/':
                                 chatShow(req, res, "/chat.html");
@@ -237,7 +239,7 @@ https.createServer(options, function(req, res) {
                     }
                     break;
                 case '/flags':
-                    URL = urlLinks[2];
+                    let URL = urlLinks[2];
                     require('./modules/send')
                     ("sources/image_sources/flags" + URL, res, 'image/png');
                     break;
@@ -386,8 +388,8 @@ https.createServer(options, function(req, res) {
 }).listen(4433);
 
 function parse(url) {
-    var x = [];
-    for (var i = 0; i < url.length; i++) {
+    let x = [];
+    for (let i = 0; i < url.length; i++) {
         if (url.charAt(i) == '/')
             x.push('/');
         else
@@ -398,7 +400,7 @@ function parse(url) {
 }
 
 function subscribeFunc(req, res, room) {
-    var p = extra.parseCookies(req);
+    let p = extra.parseCookies(req);
 
     db.sessions.getSession(p.sessionID)
         .then(function(data) {
@@ -410,10 +412,10 @@ function subscribeFunc(req, res, room) {
                         .then(function(data) {
 
                             db.sessions.deleteSession(p.sessionID)
-                                .then(function (data1) {
+                                .then(function () {
 
-                                    var s = 'sessionID=' + data + '; Path=/; Secure';
-                                    var s1 = 'login=' + p.login + '; Path=/; Secure';
+                                    let s = 'sessionID=' + data + '; Path=/; Secure';
+                                    let s1 = 'login=' + p.login + '; Path=/; Secure';
 
                                     res.writeHead(200, {
                                         'Set-Cookie': [s, s1]
@@ -441,7 +443,7 @@ function subscribeFunc(req, res, room) {
 function chatShow(req, res, path) {
     //if server don't contain sessionID, redirect to auth
     db.sessions.deleteOldSessions()
-        .then(function(data) {
+        .then(function() {
             db.sessions.getSession(extra.parseCookies(req).sessionID)
                 .then(function(data) {
                     if (data) {

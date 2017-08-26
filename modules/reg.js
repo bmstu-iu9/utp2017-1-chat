@@ -1,7 +1,7 @@
-var db = require('db');
-var log = require('tech').log;
-var extra = require('./extra');
-var config = require('config');
+const db = require('db');
+const log = require('tech').log;
+const extra = require('./extra');
+const config = require('config');
 
 exports.reg = function(req, res) {
     extra.safeRequest(req, res)
@@ -12,26 +12,16 @@ exports.reg = function(req, res) {
                     db.sessions.addSession(body.login,
                         new Date().getTime() + 86409000)
                         .then(function(data) {
-                            /*
-                            ********************
-                              DON'T TOUCH THIS
-                            ********************
-                            var forge = require('node-forge');
-                            var rsa = forge.pki.rsa;
-                            var keys = rsa.generateKeyPair({bits: 2048, e: 0x10001});
-                            data = forge.pki.rsa.encrypt(forge.util.createBuffer(data),
-                                keys.privateKey, false, false);
-                            console.log(forge.pki.rsa.decrypt(data, keys.publicKey, true, false));
-                            var key = forge.pki.publicKeyToPem(keys.publicKey);*/
 
-                            var s = 'sessionID=' + data + '; Path=/; Secure';
-                            var s1 = 'login=' + body.login + '; Path=/; Secure';
+                            let s = 'sessionID=' + data + '; Path=/; Secure';
+                            let s1 = 'login=' + body.login + '; Path=/; Secure';
 
                             res.writeHead(200, {
                                 'Set-Cookie': [s, s1]
                             });
 
-                            var x = {
+                            //rudimentary field @key
+                            let x = {
                                 key: '',
                                 text: '/chat'
                             };

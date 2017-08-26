@@ -177,6 +177,9 @@ header {
         padding: 2vh;
         border-bottom: 3px ridge black;
 }
+#online_list_users{
+        padding-left: 10px;
+}
 #out{
 	position: absolute;
 	bottom: 0;
@@ -198,7 +201,6 @@ header {
 }
 #lists{
 	padding-top:10px;
-	padding-left: 10px;
 	overflow-y: scroll;
 	height: 80%;
 }
