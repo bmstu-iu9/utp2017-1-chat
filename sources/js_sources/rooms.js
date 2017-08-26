@@ -64,10 +64,17 @@ function getNews(crd) {
             } else {
                 document.getElementById("nList").innerHTML = "";
                 let weather = {};
+                var img = document.createElement('img');
+                var width = 300;
+                var height = 300;
+                img.setAttribute("width", width);
+                img.setAttribute("height", height);
+                img.setAttribute("vspace", 10);
+                img.setAttribute("hspace", 50);
 
-                var img = new Image(413, 300);
+
                 img.src = "https://maps.googleapis.com/maps/api/staticmap?center=" + crd.latitude + "," + crd.longitude +
-                    "&zoom=10&size=500x500&path=weight:3%7Ccolor:blue%7Cenc:{coaHnetiVjM??_SkM??~R&" +
+                    "&zoom=11&size=" + width + "x" + height + "&path=weight:3%7Ccolor:blue%7Cenc:{coaHnetiVjM??_SkM??~R&" +
                     "key=AIzaSyDbksHMbdwjiNJj-JKp8O7vJd-Hfa4Ez94";
                 document.getElementById("nList").appendChild(img);
 
@@ -78,12 +85,16 @@ function getNews(crd) {
                     weather.descr = data.weather[0].description;
                 })
                     .then(function() {
-                        var img = new Image(64, 64);
+                        var img = document.createElement('img');
+                        img.setAttribute("width", 64);
+                        img.setAttribute("height", 64);
+                        img.setAttribute("hspace", 180);
                         img.src = "../image_sources/flags/" + weather.country + ".png";
                         document.getElementById("nList").appendChild(img);
                     })
                     .then(function()  {
                         var msg = document.createElement('div');
+                        msg.setAttribute("align", "center");
                         msg.className = 'news';
                         msg.innerHTML = "Ваша страна: " + weather.country + "<br>" + "Ваш город/район: " + weather.city +
                             "<br>" + "Температура: " + weather.temperature + "<br>" + "Погода: " + weather.descr;
@@ -143,8 +154,8 @@ function addRoom() {
     div.appendChild(input);
     x.appendChild(div);
 
-    input.addEventListener("keypress", function(e) {
-        if (event.keyCode == 0xD) {
+    input.addEventListener("keypress", function(event) {
+        if (event.keyCode == 0x0D) {
             title = input.value;
             x.removeChild(div);
 
