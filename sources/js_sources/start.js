@@ -29,6 +29,34 @@ window.onload = function() {
 
     document.getElementsByClassName("submit")[0].addEventListener("click", registration, false);
     document.getElementsByClassName("submit")[1].addEventListener("click", authentication, false);
+
+    //Удаление красной рамки и сообщения при нажатии на поле.
+
+    document.getElementById("login").onclick = function() {
+        this.removeAttribute("style", "border:1px solid red;");
+        var del = document.getElementById('alert_text_reg_login');
+        del.parentNode.removeChild(del);
+    }
+    document.getElementById("password").onclick = function() {
+        this.removeAttribute("style", "border:1px solid red;");
+        var del = document.getElementById('alert_text_reg');
+        del.parentNode.removeChild(del);
+    }
+    document.getElementById("repeat_password").onclick = function() {
+        this.removeAttribute("style", "border:1px solid red;");
+        var del = document.getElementById('alert_text_reg');
+        del.parentNode.removeChild(del);
+    }
+    document.getElementById("login1").onclick = function() {
+        this.removeAttribute("style", "border:1px solid red;");
+        var del = document.getElementById('alert_text_auth');
+        del.parentNode.removeChild(del);
+    }
+    document.getElementById("password1").onclick = function() {
+        this.removeAttribute("style", "border:1px solid red;");
+        var del = document.getElementById('alert_text_auth');
+        del.parentNode.removeChild(del);
+    }
 };
 
 var origin = window.location.origin;
@@ -50,10 +78,14 @@ function registration() {
                     })
                     .catch(function (err1) {
                         if (err1 == 401) {
+                            //Добавление красной рамки и сообщения
                             document.getElementById("login").value = "";
-                            document.getElementById("password").value = "";
-                            document.getElementById("repeat_password").value = "";
-                            //TODO: show message about incorrect login or password
+                            document.getElementById("login").setAttribute("style", "border:1px solid red;");
+                            var divAlert = document.createElement('div');
+                            divAlert.setAttribute("style", "color:red");
+                            divAlert.id = 'alert_text_reg_login';
+                            divAlert.appendChild(document.createTextNode("Логин уже используется"));
+                            document.getElementById("registration_form").appendChild(divAlert);
 
                         } else {
                             window.location.replace(origin + '/error' + err1);
@@ -64,9 +96,21 @@ function registration() {
                 window.location.replace(origin + '/error' + err);
             });
     } else {
+        //Добавление красной рамки и сообщения
+        document.getElementById("password").setAttribute("style", "border:1px solid red;");
+        document.getElementById("repeat_password").setAttribute("style", "border:1px solid red;");
+        var divAlert = document.createElement('div');
+        divAlert.setAttribute("style", "color:red");
+        divAlert.id = 'alert_text_reg';
+        if (password !== passwordRepeat) {
+            divAlert.appendChild(document.createTextNode("Пароли не совпадают"));
+        }
+        else if (password.length < 6) {
+            divAlert.appendChild(document.createTextNode("Пароль слишком короткий"));
+        }
+        document.getElementById("registration_form").appendChild(divAlert);
         document.getElementById("password").value = "";
         document.getElementById("repeat_password").value = "";
-        //TODO: show message about incorrect password or too small password
     }
 }
 
@@ -157,9 +201,16 @@ function authentication() {
                     })
                     .catch(function (err1) {
                         if (err1 == 401) {
+                            //Добавление красной рамки и сообщения
+                            document.getElementById("login1").setAttribute("style", "border:1px solid red;");
+                            document.getElementById("password1").setAttribute("style", "border:1px solid red;");
+                            var divAlert = document.createElement('div');
+                            divAlert.setAttribute("style", "color:red");
+                            divAlert.id = 'alert_text_auth';
+                            divAlert.appendChild(document.createTextNode("Неверный логин или пароль"));
+                            document.getElementById("enter_form").appendChild(divAlert);
                             document.getElementById("login1").value = "";
                             document.getElementById("password1").value = "";
-                            //TODO: show message about incorrect login or password
 
                         } else {
                             window.location.replace(origin + '/error'  + err1);

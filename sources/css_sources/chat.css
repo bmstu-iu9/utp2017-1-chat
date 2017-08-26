@@ -173,6 +173,8 @@ header {
 }
 #online, #offline{
 	cursor: pointer;
+        font-weight: bold;
+        font-color: black;
 }
 #online_list_users, #offline_list_users{
 	display: none;

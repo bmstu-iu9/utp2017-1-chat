@@ -165,6 +165,9 @@ https.createServer(options, function(req, res) {
                                 chat.publish(req, res, room);
                                 chat.subscribe(req, res, room);
                                 break;
+                            case '/get_users':
+                                chat.usersSave(req, res, room);
+                                break;
                             default:
                                 if(urlLinks[2].substr(0, 6) == '/image') {
                                     require('./modules/send')
