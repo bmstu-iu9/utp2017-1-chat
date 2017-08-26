@@ -121,6 +121,7 @@ footer {
 }
 #registration_form form, #enter_form form{
 	position: relative;
+        overflow: hidden;
 }
 #registration_form{
 	height: 230px;
