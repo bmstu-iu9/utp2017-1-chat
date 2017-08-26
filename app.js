@@ -145,17 +145,32 @@ https.createServer(options, function(req, res) {
                             case '/':
                                 chatShow(req, res, "/chat.html");
                                 break;
-                            case '/msg':
+                            case '/get_data':
+                                let data = {};
                                 db.dialogs.getMessages(room, 0, true)
-                                    .then(function(data) {
+                                    .then(function(messages) {
+                                        data.messages = messages;
+                                        data.Users = chat.getOnlineUsersInRoom(room);
                                         res.end(JSON.stringify(data));
-                                        
+
                                     })
                                     .catch(function (err) {
-                                        log.error('Error at app.js/chat/msg' +
+                                        log.error('Error at app.js/chat/get_data' +
                                             '/getMessages', err);
                                     });
                                 break;
+
+                  //          case '/msg':
+                  //              db.dialogs.getMessages(room, 0, true)
+                  //                  .then(function(data) {
+                   //                     res.end(JSON.stringify(data));
+                  //
+                   //                 })
+                   //                 .catch(function (err) {
+                   //                     log.error('Error at app.js/chat/msg' +
+                    //                        '/getMessages', err);
+                    //                });
+                    //            break;
                             case '/exit':
                                 // КОСТЫЛЬ res.writeHead(302, { Location: '' });
                                 res.end();
@@ -167,9 +182,9 @@ https.createServer(options, function(req, res) {
                                 chat.publish(req, res, room);
                                 chat.subscribe(req, res, room);
                                 break;
-                            case '/get_users':
-                                chat.usersSave(req, res, room);
-                                break;
+                        //    case '/get_users':
+                        //        chat.usersSave(req, res, room);
+                         //       break;
                             default:
                                 if(urlLinks[2].substr(0, 6) == '/image') {
                                     require('./modules/send')

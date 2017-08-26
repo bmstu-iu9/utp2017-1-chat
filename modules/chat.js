@@ -5,7 +5,6 @@ const extra = require('./extra');
 const db = require('db');
 
 const rooms = [];
-const roomsRes = [];
 
 /**
  * Long-polling mechanism.
@@ -22,26 +21,26 @@ const roomsRes = [];
  */
 exports.subscribe = function(req, res, room) {
 
-    if (rooms[room])
-        rooms[room].push(res);
-    else {
-        rooms[room] = [];
-        rooms[room].push(res);
-    }
+    if (!rooms[room]) rooms[room] = [];
 
-    roomsRes[room].forEach(function (res) {
-        res.end(JSON.stringify({msg: 'add', text: extra.parseCookies(req).login}))
+    res.login = extra.parseCookies(req).login;
+
+    rooms[room].push(res);
+
+    rooms[room].forEach(function (usr) {
+         if (usr.login != res.login) usr.end(JSON.stringify({msg: 'add', text: res.login}));
     });
 
     res.on('close', function() {
         rooms[room].splice(rooms[room].indexOf(res), 1);
 
-        roomsRes[room].forEach(function (res) {
+        rooms[room].forEach(function (res) {
             res.end(JSON.stringify({
                 msg: 'delete',
-                text: extra.parseCookies(req).login}))
+                text: res.login}))
         });
     });
+
 
 };
 
@@ -92,9 +91,19 @@ exports.publish = function(req, res, room) {
         });
 };
 
-exports.getUsersInRoom = function (id) {
-    return JSON.stringify(rooms[id]);
-};
+exports.getOnlineUsersInRoom = function (id) {
+    let users = [];
+    if (!!rooms[id]) {
+        rooms[id].forEach(function(user) {
+            users.push(user.login);
+        });
+    }
+    return users;
+}
+
+//exports.getUsersInRoom = function (id) {
+//    return JSON.stringify(rooms[id]);
+//};
 
 function saveImage(image, id) {
     fs.mkdir("./temp", function () {
@@ -104,7 +113,7 @@ function saveImage(image, id) {
     });
 
 }
-
+/*
 exports.usersSave = function(req, res, room) {
     if (roomsRes[room])
         roomsRes[room].push(res);
@@ -113,3 +122,4 @@ exports.usersSave = function(req, res, room) {
         roomsRes[room].push(res);
     }
 };
+*/
