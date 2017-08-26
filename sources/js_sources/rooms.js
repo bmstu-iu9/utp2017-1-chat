@@ -68,21 +68,24 @@ function getNews(crd) {
             } else {
                 document.getElementById("nList").innerHTML = "";
                 let weather = {};
+
               
                 let img = document.createElement('img');
                 let width = 300;
                 let height = 300;
-              
+
                 img.setAttribute("width", width);
                 img.setAttribute("height", height);
                 img.setAttribute("vspace", 10);
                 img.setAttribute("hspace", 50);
+
 
                 img.src = "https://maps.googleapis.com/maps/api/staticmap?center="
                     + crd.latitude + "," + crd.longitude + "&zoom=11&size="
                     + width + "x" + height +
                     "&path=weight:3%7Ccolor:blue%7Cenc:{coaHnetiVjM??_SkM??~R&" +
                     "key=AIzaSyDbksHMbdwjiNJj-JKp8O7vJd-Hfa4Ez94";
+
                 document.getElementById("nList").appendChild(img);
 
                 getWeather(crd).then(function(data) {
@@ -92,8 +95,9 @@ function getNews(crd) {
                     weather.descr = data.weather[0].description;
                 })
                     .then(function() {
+
                         let img = document.createElement('img');
-                  
+
                         img.setAttribute("width", 64);
                         img.setAttribute("height", 64);
                         img.setAttribute("hspace", 180);
@@ -101,8 +105,9 @@ function getNews(crd) {
                         document.getElementById("nList").appendChild(img);
                     })
                     .then(function()  {
+
                         let msg = document.createElement('div');
-                  
+
                         msg.setAttribute("align", "center");
                         msg.className = 'news';
                         msg.innerHTML = "Ваша страна: " + weather.country + "<br>"
@@ -149,7 +154,14 @@ function getGeolocation() {
 }
 
 
+function infoAboutTooManyRooms() {
+    alert("Вы собираетесь добавить еще одну комнату, но сначала разберитесь со старой!");
+}
+
 function addRoom() {
+    document.getElementById("addRoom").removeEventListener("click", addRoom, false);
+    document.getElementById("addRoom").addEventListener("click", infoAboutTooManyRooms, false);
+
     let title;
 
     let x = document.getElementById("rooms");
@@ -169,6 +181,8 @@ function addRoom() {
         if (event.keyCode == 0x0D) {
             title = input.value;
             x.removeChild(div);
+            document.getElementById("addRoom").removeEventListener("click", infoAboutTooManyRooms, false)
+            document.getElementById("addRoom").addEventListener("click", addRoom, false);
 
             xhrAddRoom(title)
                 .then(function (data) {
