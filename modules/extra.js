@@ -1,11 +1,11 @@
-var log = require('tech').log;
+const log = require('tech').log;
 
 exports.parseCookies = function(req) {
-    var cookBook = {};
-    var rc = req.headers.cookie;
+    let cookBook = {};
+    let rc = req.headers.cookie;
 
     rc && rc.split(';').forEach( function(cookies) {
-        var parts = cookies.split('=');
+        let parts = cookies.split('=');
         cookBook[parts.shift().trim()] = decodeURI(parts.join('='));
     });
 
@@ -14,22 +14,23 @@ exports.parseCookies = function(req) {
 
 exports.safeRequest = function(req, res) {
     return new Promise(function(response, reject) {
-        var body = '';
+        let body = '';
 
         req
             .on('readable', function () { //long-read message
-                var r = req.read();
+                let r = req.read();
                 if (r != null)
                     body += r;
 
-                // if (body.length > 1e4) {
-                //   res.statusCode = 413;
-                //  res.end("Message is too long");
-                // log.error("413 in reading message");
-                // reject('413: Message is too long');
-                // }
-
-                //Это ограничение пришлось убрать, т.к. файлы приходят вместе с сообщениями.
+                /* if (body.length > 1e4) {
+                      res.statusCode = 413;
+                      res.end("Message is too long");
+                      log.error("413 in reading message");
+                      reject('413: Message is too long');
+                  }
+                */
+                //Это ограничение пришлось убрать,
+                // т.к. файлы приходят вместе с сообщениями.
             })
             .on('end', function () { //JSON-safe function
                 try {

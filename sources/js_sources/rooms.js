@@ -12,9 +12,10 @@ window.onload = function() {
 
 function getWeather(crd) {
     return new Promise(function(response, reject) {
-        var request = new XMLHttpRequest();
-        var url = "https://api.openweathermap.org/data/2.5/weather?lat=" + crd.latitude +
-            "&lon=" + crd.longitude + "&APPID=5356a6c0c9e4b5246d1aad91aa51fcbd";
+        let request = new XMLHttpRequest();
+        let url = "https://api.openweathermap.org/data/2.5/weather?lat=" +
+            crd.latitude + "&lon=" + crd.longitude +
+            "&APPID=5356a6c0c9e4b5246d1aad91aa51fcbd";
 
         request.open('GET', url);
 
@@ -35,7 +36,7 @@ function getWeather(crd) {
 
 function loadNews(data) {
     data.news.forEach(function(msg) {
-        var divNewsMsg = document.createElement('div');
+        let divNewsMsg = document.createElement('div');
         divNewsMsg.className = 'news';
 
         divNewsMsg.appendChild(document.createTextNode(msg.text));
@@ -52,29 +53,35 @@ function getNews(crd) {
             data = JSON.parse(data);
 
             if (!navigator.geolocation) {
-                document.getElementById("nList").innerHTML = "<p>Geolocation is not supported by your browser, weather and map is not supported too</p>";
+                document.getElementById("nList").innerHTML =
+                    "<p>Geolocation is not supported " +
+                    "by your browser, weather and map is not supported too</p>";
                 loadNews(data);
             }
 
             else if (!crd.latitude) {
-                document.getElementById("nList").innerHTML = "<p align=\"center\">Произошла ошибка при определении вашего " +
+              document.getElementById("nList").innerHTML =
+                    "<p align=\"center\">Произошла ошибка при определении вашего " +
                     "местонахождения, поэтому погода и карта не будут прогружены!</p>";
                 loadNews(data);
 
             } else {
                 document.getElementById("nList").innerHTML = "";
                 let weather = {};
-                var img = document.createElement('img');
-                var width = 300;
-                var height = 300;
+              
+                let img = document.createElement('img');
+                let width = 300;
+                let height = 300;
+              
                 img.setAttribute("width", width);
                 img.setAttribute("height", height);
                 img.setAttribute("vspace", 10);
                 img.setAttribute("hspace", 50);
 
-
-                img.src = "https://maps.googleapis.com/maps/api/staticmap?center=" + crd.latitude + "," + crd.longitude +
-                    "&zoom=11&size=" + width + "x" + height + "&path=weight:3%7Ccolor:blue%7Cenc:{coaHnetiVjM??_SkM??~R&" +
+                img.src = "https://maps.googleapis.com/maps/api/staticmap?center="
+                    + crd.latitude + "," + crd.longitude + "&zoom=11&size="
+                    + width + "x" + height +
+                    "&path=weight:3%7Ccolor:blue%7Cenc:{coaHnetiVjM??_SkM??~R&" +
                     "key=AIzaSyDbksHMbdwjiNJj-JKp8O7vJd-Hfa4Ez94";
                 document.getElementById("nList").appendChild(img);
 
@@ -85,7 +92,8 @@ function getNews(crd) {
                     weather.descr = data.weather[0].description;
                 })
                     .then(function() {
-                        var img = document.createElement('img');
+                        let img = document.createElement('img');
+                  
                         img.setAttribute("width", 64);
                         img.setAttribute("height", 64);
                         img.setAttribute("hspace", 180);
@@ -93,11 +101,14 @@ function getNews(crd) {
                         document.getElementById("nList").appendChild(img);
                     })
                     .then(function()  {
-                        var msg = document.createElement('div');
+                        let msg = document.createElement('div');
+                  
                         msg.setAttribute("align", "center");
                         msg.className = 'news';
-                        msg.innerHTML = "Ваша страна: " + weather.country + "<br>" + "Ваш город/район: " + weather.city +
-                            "<br>" + "Температура: " + weather.temperature + "<br>" + "Погода: " + weather.descr;
+                        msg.innerHTML = "Ваша страна: " + weather.country + "<br>"
+                            + "Ваш город/район: " + weather.city +
+                            "<br>" + "Температура: " + weather.temperature + "<br>"
+                            + "Погода: " + weather.descr;
                         document.getElementById("nList").appendChild(msg);
                     })
                     .then(function() {
@@ -119,7 +130,7 @@ function getGeolocation() {
     document.getElementById("nList").innerHTML = "<p> <h1> Locating… </h1> </p>";
     if (!navigator.geolocation) return getNews({});
 
-    var options = {
+    let options = {
         timeout: 5 * 1000,
         maximumAge: 10 * 60 * 1000,
         enableHighAccuracy: false
@@ -131,7 +142,7 @@ function getGeolocation() {
 
     function error(err) {
         console.warn(`ERROR(${err.code}): ${err.message}`);
- 	getNews({});
+        getNews({});
     }
 
     navigator.geolocation.getCurrentPosition(success, error, options);
@@ -193,17 +204,18 @@ function loadRooms() {
 }
 
 function showRoom(data) {
-    var divLine = document.createElement('div');
+    let divLine = document.createElement('div');
     divLine.className = 'line';
-    var divRoom = document.createElement('div');
+    let divRoom = document.createElement('div');
     divRoom.className = 'room';
+    let divDelete;
 
     divRoom.addEventListener('click', function () {
         goToRoom(data.id);
     }, false);
 
     if (data.author == getCookieValue("login")) {
-        var divDelete = document.createElement('div');
+        divDelete = document.createElement('div');
         divDelete.className = 'delete';
         divDelete.addEventListener('click', function() {
             deleteRoom(data.id);
@@ -225,7 +237,7 @@ function showRoom(data) {
 }
 
 function reshowRooms() {
-    var rooms = document.getElementById("rooms");
+    let rooms = document.getElementById("rooms");
     while (rooms.firstChild) {
         rooms.removeChild(rooms.firstChild);
     }
@@ -234,7 +246,7 @@ function reshowRooms() {
 }
 
 function goToRoom(id) {
-    var xhr = new XMLHttpRequest();
+    let xhr = new XMLHttpRequest();
 
     xhr.open("POST", '/chat/redirect', true);
 
@@ -257,7 +269,7 @@ function goToRoom(id) {
 }
 
 function exit() {
-    var xhr = new XMLHttpRequest();
+    let xhr = new XMLHttpRequest();
 
     xhr.open("POST", '/chat/exit', true);
 
@@ -272,7 +284,8 @@ function exit() {
         if (xhr.readyState == 4) {
             ///if (xhr.status == 302) {
             if (xhr.status == 200) {
-                //window.location.replace(window.location.origin + xhr.getResponseHeader('Location'));
+                //window.location.replace(window.location.origin
+                // + xhr.getResponseHeader('Location'));
                 window.location.replace(window.location.origin + '');
             } else if (xhr.status != 200){
                 window.location.replace(window.location.origin + '/error'
@@ -286,7 +299,7 @@ function exit() {
 
 function xhrGetNews(crd) {
     return new Promise(function(response, reject) {
-        var xhr = new XMLHttpRequest();
+        let xhr = new XMLHttpRequest();
 
         xhr.open("POST", '/chat/news', true);
 
@@ -308,7 +321,7 @@ function xhrGetNews(crd) {
 function xhrAddRoom(title) {
 
     return new Promise(function(response, reject) {
-        var xhr = new XMLHttpRequest();
+        let xhr = new XMLHttpRequest();
 
         xhr.open("POST", '/chat/add_room', true);
 
@@ -330,7 +343,7 @@ function xhrAddRoom(title) {
 
 function xhrLoadRoom() {
     return new Promise(function(response, reject) {
-        var xhr = new XMLHttpRequest();
+        let xhr = new XMLHttpRequest();
 
         xhr.open("POST", '/chat/get_rooms', true);
 
@@ -356,7 +369,7 @@ function xhrLoadRoom() {
 
 function xhrDeleteRoom(id) {
     return new Promise(function(response, reject) {
-        var xhr = new XMLHttpRequest();
+        let xhr = new XMLHttpRequest();
 
         xhr.open("POST", '/chat/delete_room', true);
 
@@ -377,6 +390,6 @@ function xhrDeleteRoom(id) {
 }
 
 function getCookieValue(a) {
-    var b = document.cookie.match('(^|;)\\s*' + a + '\\s*=\\s*([^;]+)');
+    let b = document.cookie.match('(^|;)\\s*' + a + '\\s*=\\s*([^;]+)');
     return b ? b.pop() : '';
 }

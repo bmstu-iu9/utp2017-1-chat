@@ -1,9 +1,9 @@
-var db = require('db');
-var log = require('tech').log;
-var extra = require('./extra');
+const db = require('db');
+const log = require('tech').log;
+const extra = require('./extra');
 
 exports.session = function(req, res) {
-    var ID = extra.parseCookies(req).sessionID;
+    let ID = extra.parseCookies(req).sessionID;
 
     db.sessions.getSession(ID)
         .then(function (data) {
@@ -33,8 +33,8 @@ exports.auth = function(req, res) {
                                 new Date().getTime() + 86409000)
                                 .then(function(data) {
 
-                                    var s = 'sessionID=' + data + '; Path=/; Secure';
-                                    var s1 = 'login=' + body.login + '; Path=/; Secure';
+                                    let s = 'sessionID=' + data + '; Path=/; Secure';
+                                    let s1 = 'login=' + body.login + '; Path=/; Secure';
 
                                     res.writeHead(200, {
                                         'Set-Cookie': [s, s1]
@@ -64,9 +64,8 @@ exports.auth = function(req, res) {
 exports.salt = function(req, res) {
     extra.safeRequest(req, res)
         .then(function(data) {
-            var login = data.login;
 
-            db.users.getUserRead(login)
+            db.users.getUserRead(data.login)
                 .then(function(data) {
                     if (data) {
                         res.end(data.salt)
