@@ -6,8 +6,7 @@ window.onload = function() {
     subscribe();
     document.getElementById("message").focus();
     setTimeout(function() {
-        var ch = document.getElementById("dialog");
-        ch.scrollTop = 1000000;
+        document.getElementById("dialog").scrollTop = 1000000;
     }, 150);
     document.getElementById("out").addEventListener("click", exit, false);
 	document.getElementById("send").addEventListener("click", publish, false);
@@ -27,33 +26,34 @@ window.onload = function() {
     }, false);
 	document.getElementById("online").onmouseover = function() {
 	    this.setAttribute("style", "background-color:grey;");
-    }
+    };
     document.getElementById("online").onmouseout = function() {
 	    this.removeAttribute("style", "background-color:grey;");
-    }
+    };
     document.getElementById("online").addEventListener("click", function(e) {
-        var element = document.getElementById("online_list_users");
+        let element = document.getElementById("online_list_users");
         if(element.style.display == "none" || element.style.display == ""){
             element.style.display = "block";
-            element.getElementsByClassName("user")[element.getElementsByClassName("user").length-1].scrollIntoView(false);
+            element.getElementsByClassName("user")[element
+                .getElementsByClassName("user").length-1].scrollIntoView(false);
         }else{
             element.style.display = "none";
         }
     }, false);
 };
-var room = 0; //stub
-function publish() {
-    var message = document.getElementById("message").value.trim();
 
-    var inputFileToLoad = document.getElementById("inputFileToLoad").files[0];
+function publish() {
+    let message = document.getElementById("message").value.trim();
+
+    let inputFileToLoad = document.getElementById("inputFileToLoad").files[0];
 
     if (inputFileToLoad) {
-        var fileReader = new FileReader();
+        let fileReader = new FileReader();
 
         fileReader.addEventListener("load", function() {
-            var attachment = fileReader.result.split("base64,")[1];
+            let attachment = fileReader.result.split("base64,")[1];
 
-            var xhr = new XMLHttpRequest();
+            let xhr = new XMLHttpRequest();
 
             xhr.open("POST", window.location.pathname + "/publish", true);
 
@@ -65,9 +65,9 @@ function publish() {
 
         fileReader.readAsDataURL(inputFileToLoad);
 
-        var oldInput = document.getElementById("inputFileToLoad");
+        let oldInput = document.getElementById("inputFileToLoad");
 
-        var newInput = document.createElement("input");
+        let newInput = document.createElement("input");
 
         newInput.type = oldInput.type;
         newInput.accept = oldInput.accept;
@@ -76,7 +76,7 @@ function publish() {
         oldInput.parentNode.replaceChild(newInput, oldInput);
     } else {
 
-        var xhr = new XMLHttpRequest();
+        let xhr = new XMLHttpRequest();
 
         xhr.open("POST", window.location.pathname + "/publish", true);
 
@@ -90,7 +90,7 @@ function publish() {
 }
 
 function subscribe() {
-    var xhr = new XMLHttpRequest();
+    let xhr = new XMLHttpRequest();
 
     xhr.open("POST", window.location.pathname + "/subscribe", true);
 
@@ -102,7 +102,7 @@ function subscribe() {
 
             } else if (xhr.status == 200) {
 
-            	var x = JSON.parse(this.responseText);
+                let x = JSON.parse(this.responseText);
             	get_message(x);
 
                 subscribe();
@@ -121,7 +121,7 @@ function subscribe() {
 }
 
 function oldMessages() {
-    var xhr = new XMLHttpRequest();
+    let xhr = new XMLHttpRequest();
 
     xhr.open("GET", window.location.pathname + "/msg", true);
     xhr.send();
@@ -143,7 +143,7 @@ function oldMessages() {
 }
 
 function exit() {
-    var xhr = new XMLHttpRequest();
+    let xhr = new XMLHttpRequest();
 
     xhr.open("POST", window.location.pathname + "/exit", true);
 
@@ -158,7 +158,8 @@ function exit() {
         if (xhr.readyState == 4) {
             ///if (xhr.status == 302) {
             if (xhr.status == 200) {
-                //window.location.replace(window.location.origin + xhr.getResponseHeader('Location'));
+                //window.location.replace(window.location.origin
+                // + xhr.getResponseHeader('Location'));
                 window.location.replace(window.location.origin + '');
             } else if (xhr.status != 200){
                 window.location.replace(window.location.origin + '/error'
@@ -169,58 +170,72 @@ function exit() {
 }
 
 function get_message(message){
-    var text = message.message;
+    let text = message.message;
 
     if (text != "" || message.attachment){
 
-        var divMessage = document.createElement('div');
+        let divMessage = document.createElement('div');
         divMessage.className = 'messages';
-        var divLogin = document.createElement('div');
+        let divLogin = document.createElement('div');
         divLogin.className = 'login';
-        var divDate = document.createElement('div');
+        let divDate = document.createElement('div');
         divDate.className = 'date_time';
-        var divText = document.createElement('div');
+        let divText = document.createElement('div');
         divText.className = 'text_of_message';
+
         if(text == "")
             text = "&nbsp";
         divText.innerHTML = text.replace(/([^>])\n/g, '$1<br/>');
 
         divDate.appendChild(document.createTextNode(message.date));
         divLogin.appendChild(document.createTextNode(message.login));
+
         divMessage.appendChild(divLogin);
         divMessage.appendChild(divText);
         divMessage.appendChild(divDate);
+
         if(message.attachment){
-            var oImg = document.createElement("img");                      //TODO FRONTEND
-            oImg.setAttribute('src', window.location.pathname + "/image/" + message.attachment);
+
+            let oImg = document.createElement("img");
+            oImg.setAttribute('src', window.location.pathname +
+                "/image/" + message.attachment);
             oImg.setAttribute("class", "image_in_message");
             divMessage.appendChild(oImg);
+
             oImg.onload = function (event) {
-                event=event || window.event;
-                var el=event.target || event.srcElement;
-                var tmp=get_dimensions(el);
-                var width = 0;
-                var height = 0;
+                event = event || window.event;
+
+                let el = event.target || event.srcElement;
+                let tmp = get_dimensions(el);
+                let width = 0;
+                let height = 0;
+
                 if(tmp.real_width > 890 || tmp.real_height > 480){
-                    var kof1 = tmp.real_width / 690;
-                    var kof2 = tmp.real_height / 400;
-                    width = tmp.real_width / max(kof1, kof2);
-                    height = tmp.real_height / max(kof1, kof2);
-                    oImg.setAttribute("width", width+"px");
-                    oImg.setAttribute("height", height+"px");
+                    let kof1 = tmp.real_width / 690;
+                    let kof2 = tmp.real_height / 400;
+                    width = tmp.real_width / Math.max(kof1, kof2);
+                    height = tmp.real_height / Math.max(kof1, kof2);
+                    oImg.setAttribute("width", width + "px");
+                    oImg.setAttribute("height", height + "px");
                 }
+
                 oImg.addEventListener("click", function(){
                     document.getElementById("back").style.display = "block";
-                    var fullImg = document.getElementById("popup_image");
-                    fullImg.setAttribute('src', window.location.pathname + "/image/" + message.attachment);
+                    let fullImg = document.getElementById("popup_image");
+                    fullImg.setAttribute('src', window.location.pathname
+                        + "/image/" + message.attachment);
                     fullImg.style.display = "block";
-                    if(tmp.real_width+150 > screen.width || tmp.real_height+150 > screen.height){
-                        var kof1 = tmp.real_width / (screen.width-150);
-                        var kof2 = tmp.real_height / (screen.height-150);
-                        width = tmp.real_width / max(kof1, kof2);
-                        height = tmp.real_height / max(kof1, kof2);
-                        fullImg.setAttribute("width", width+"px");
-                        fullImg.setAttribute("height", height+"px");
+
+                    if(tmp.real_width+150 > screen.width
+                        || tmp.real_height+150 > screen.height){
+                        let kof1 = tmp.real_width / (screen.width-150);
+                        let kof2 = tmp.real_height / (screen.height-150);
+
+                        width = tmp.real_width / Math.max(kof1, kof2);
+                        height = tmp.real_height / Math.max(kof1, kof2);
+
+                        fullImg.setAttribute("width", width + "px");
+                        fullImg.setAttribute("height", height + "px");
                     }
                 }, false);
                 document.getElementById("dialog").scrollTop = 1000000;
@@ -231,31 +246,26 @@ function get_message(message){
     document.getElementById("dialog").scrollTop = 1000000;
 }
 function get_dimensions(el) {
-    if (el.naturalWidth!=undefined) {
+    //noinspection JSValidateTypes
+    if (el.naturalWidth != undefined) {
         return { 'real_width':el.naturalWidth,
             'real_height':el.naturalHeight,
             'client_width':el.width,
             'client_height':el.height };
-    }
-    else if (el.tagName.toLowerCase()=='img') {
-        var img=new Image();
-        img.src=el.src;
-        var real_w=img.width;
-        var real_h=img.height;
+
+    } else if (el.tagName.toLowerCase()=='img') {
+        let img = new Image();
+        img.src = el.src;
+        let real_w=img.width;
+        let real_h=img.height;
+
         return { 'real_width':real_w,
             'real_height':real_h,
             'client_width':el.width,
             'client_height':el.height };
-    }
-    else {
+    } else {
         return false;
     }
-}
-
-function max(a, b) {
-    if(a > b)
-        return a;
-    return b;
 }
 
 function getUsers() {
@@ -269,18 +279,19 @@ function getUsers() {
         if (xhr.readyState == 4) {
             if (xhr.status == 200) {
                 let x = JSON.parse(this.responseText);
-                var userID = 'user_' + x.text;
+                let userID = 'user_' + x.text;
 
                 if (x.msg == "add") {
                     if (!document.getElementById(userID)) {
-                        var divUsers = document.createElement('div');
+                        let divUsers = document.createElement('div');
                         divUsers.className = 'user';
                         divUsers.id = userID;
-                        divUsers.appendChild(document.createTextNode(x.text))
-                        document.getElementById('online_list_users').appendChild(divUsers);
+                        divUsers.appendChild(document.createTextNode(x.text));
+                        document.getElementById('online_list_users')
+                            .appendChild(divUsers);
                     }
                 } else if (x.msg == "delete") {
-                    var del = document.getElementById(userID);
+                    let del = document.getElementById(userID);
                     del.parentNode.removeChild(del);
                 } else
                     window.location.replace(window.location.origin + '/error'
