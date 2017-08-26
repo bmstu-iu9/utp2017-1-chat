@@ -60,7 +60,7 @@ function getNews(crd) {
             }
 
             else if (!crd.latitude) {
-                document.getElementById("nList").innerHTML =
+              document.getElementById("nList").innerHTML =
                     "<p align=\"center\">Произошла ошибка при определении вашего " +
                     "местонахождения, поэтому погода и карта не будут прогружены!</p>";
                 loadNews(data);
@@ -68,14 +68,15 @@ function getNews(crd) {
             } else {
                 document.getElementById("nList").innerHTML = "";
                 let weather = {};
+              
                 let img = document.createElement('img');
                 let width = 300;
                 let height = 300;
+              
                 img.setAttribute("width", width);
                 img.setAttribute("height", height);
                 img.setAttribute("vspace", 10);
                 img.setAttribute("hspace", 50);
-
 
                 img.src = "https://maps.googleapis.com/maps/api/staticmap?center="
                     + crd.latitude + "," + crd.longitude + "&zoom=11&size="
@@ -92,6 +93,7 @@ function getNews(crd) {
                 })
                     .then(function() {
                         let img = document.createElement('img');
+                  
                         img.setAttribute("width", 64);
                         img.setAttribute("height", 64);
                         img.setAttribute("hspace", 180);
@@ -100,6 +102,7 @@ function getNews(crd) {
                     })
                     .then(function()  {
                         let msg = document.createElement('div');
+                  
                         msg.setAttribute("align", "center");
                         msg.className = 'news';
                         msg.innerHTML = "Ваша страна: " + weather.country + "<br>"

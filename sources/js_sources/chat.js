@@ -24,22 +24,6 @@ window.onload = function() {
         document.getElementById("popup_image").setAttribute("width", "");
         document.getElementById("popup_image").setAttribute("height", "");
     }, false);
-	document.getElementById("online").onmouseover = function() {
-	    this.setAttribute("style", "background-color:grey;");
-    };
-    document.getElementById("online").onmouseout = function() {
-	    this.removeAttribute("style", "background-color:grey;");
-    };
-    document.getElementById("online").addEventListener("click", function(e) {
-        let element = document.getElementById("online_list_users");
-        if(element.style.display == "none" || element.style.display == ""){
-            element.style.display = "block";
-            element.getElementsByClassName("user")[element
-                .getElementsByClassName("user").length-1].scrollIntoView(false);
-        }else{
-            element.style.display = "none";
-        }
-    }, false);
 };
 
 function publish() {
