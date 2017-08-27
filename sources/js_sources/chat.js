@@ -1,23 +1,24 @@
 "use strict";
 
 window.onload = function() {
+    oldMessages();
+    getOnlineUsers();
     subscribe();
-    loadData();
     document.getElementById("message").focus();
     setTimeout(function() {
         document.getElementById("dialog").scrollTop = 1000000;
     }, 150);
     document.getElementById("out").addEventListener("click", exit, false);
-	document.getElementById("send").addEventListener("click", publish, false);
-	document.getElementById("message").addEventListener("keypress", function(event) {
-		if((event.ctrlKey) && ((event.keyCode == 0xA)||(event.keyCode == 0xD))){
-			publish();
+    document.getElementById("send").addEventListener("click", publish, false);
+    document.getElementById("message").addEventListener("keypress", function(event) {
+        if((event.ctrlKey) && ((event.keyCode == 0xA)||(event.keyCode == 0xD))){
+            publish();
             setTimeout(function() {
                 document.getElementById("message").value = "";
             }, 1);
-		}
-	}, false);
-	document.getElementById("back").addEventListener("click", function() {
+        }
+    }, false);
+    document.getElementById("back").addEventListener("click", function() {
         document.getElementById("back").style.display="none";
         document.getElementById("popup_image").style.display="none";
         document.getElementById("popup_image").setAttribute("width", "");
@@ -86,28 +87,8 @@ function subscribe() {
             } else if (xhr.status == 200) {
 
                 let x = JSON.parse(this.responseText);
-                alert("subscr: " + this.responseText);
+                get_message(x);
 
-                if (!!x.msg) {
-
-                    let userID = 'user_' + x.text;
-
-                    if (x.msg == "add" && !document.getElementById(userID)) {
-                        let divUsers = document.createElement('div');
-                        divUsers.className = 'user';
-                        divUsers.id = userID;
-                        divUsers.appendChild(document.createTextNode(x.text));
-                        document.getElementById('online_list_users')
-                            .appendChild(divUsers);
-
-                    } else if (x.msg == "delete") {
-                        let del = document.getElementById(userID);
-                        del.parentNode.removeChild(del);
-                    }
-
-                } else {
-                    get_message(x);
-                }
                 subscribe();
 
             } else {
@@ -121,6 +102,28 @@ function subscribe() {
     };
 
     xhr.send('');
+}
+
+function oldMessages() {
+    let xhr = new XMLHttpRequest();
+
+    xhr.open("GET", window.location.pathname + "/msg", true);
+    xhr.send();
+
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4) {
+            if (xhr.status == 200) {
+
+                JSON.parse(this.responseText).forEach(function(obj) {
+                    get_message(obj);
+
+                });
+            } else {
+                window.location.replace(window.location.origin + '/error'
+                    + xhr.statusCode);
+            }
+        }
+    };
 }
 
 function exit() {
@@ -226,7 +229,6 @@ function get_message(message){
     }
     document.getElementById("dialog").scrollTop = 1000000;
 }
-
 function get_dimensions(el) {
     //noinspection JSValidateTypes
     if (el.naturalWidth != undefined) {
@@ -250,38 +252,34 @@ function get_dimensions(el) {
     }
 }
 
-function loadData(){
+function getOnlineUsers() {
     const xhr = new XMLHttpRequest();
 
-    xhr.open("GET", window.location.pathname + "/get_data", true);
+    xhr.open("GET", window.location.pathname + "/get_users", true);
+
+    xhr.send();
 
     xhr.onreadystatechange = function() {
         if (xhr.readyState == 4) {
             if (xhr.status == 200) {
-                alert("load: " + this.responseText);
 
-                let data = JSON.parse(this.responseText);
+                const x = JSON.parse(this.responseText);
+                document.getElementById('online_list_users').innerHTML = '';
 
-                data.messages.forEach(function (obj) {
-                    get_message(obj);
-                });
-
-
-                data.Users.forEach(function (login) {
-                    let userID = 'user_' + login;
+                x.forEach(function (user) {
+                    let userID = 'user_' + user;
                     let divUsers = document.createElement('div');
                     divUsers.className = 'user';
                     divUsers.id = userID;
-                    divUsers.appendChild(document.createTextNode(login));
+                    divUsers.appendChild(document.createTextNode(user));
                     document.getElementById('online_list_users')
                         .appendChild(divUsers);
                 });
-
-            } else {
-                window.location.replace(window.location.origin + '/error'
-                    + xhr.statusCode);
             }
+
+            setTimeout(getOnlineUsers, 5 * 1000);
+
         }
-    };
-    xhr.send();
+    }
+
 }
