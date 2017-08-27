@@ -168,7 +168,7 @@ https.createServer(options, function(req, res) {
                                 chat.subscribe(req, res, room);
                                 break;
                             case '/get_users':
-                                chat.usersSave(req, res, room);
+                                chat.getUsers(req, res, room);
                                 break;
                             default:
                                 if(urlLinks[2].substr(0, 6) == '/image') {

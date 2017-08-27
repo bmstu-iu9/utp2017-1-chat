@@ -2,23 +2,23 @@
 
 window.onload = function() {
     oldMessages();
-    getUsers();
+    getOnlineUsers();
     subscribe();
     document.getElementById("message").focus();
     setTimeout(function() {
         document.getElementById("dialog").scrollTop = 1000000;
     }, 150);
     document.getElementById("out").addEventListener("click", exit, false);
-	document.getElementById("send").addEventListener("click", publish, false);
-	document.getElementById("message").addEventListener("keypress", function(e) {
-		if((event.ctrlKey) && ((event.keyCode == 0xA)||(event.keyCode == 0xD))){
-			publish();
+    document.getElementById("send").addEventListener("click", publish, false);
+    document.getElementById("message").addEventListener("keypress", function(event) {
+        if((event.ctrlKey) && ((event.keyCode == 0xA)||(event.keyCode == 0xD))){
+            publish();
             setTimeout(function() {
                 document.getElementById("message").value = "";
             }, 1);
-		}
-	}, false);
-	document.getElementById("back").addEventListener("click", function() {
+        }
+    }, false);
+    document.getElementById("back").addEventListener("click", function() {
         document.getElementById("back").style.display="none";
         document.getElementById("popup_image").style.display="none";
         document.getElementById("popup_image").setAttribute("width", "");
@@ -87,7 +87,7 @@ function subscribe() {
             } else if (xhr.status == 200) {
 
                 let x = JSON.parse(this.responseText);
-            	get_message(x);
+                get_message(x);
 
                 subscribe();
 
@@ -252,7 +252,7 @@ function get_dimensions(el) {
     }
 }
 
-function getUsers() {
+function getOnlineUsers() {
     const xhr = new XMLHttpRequest();
 
     xhr.open("GET", window.location.pathname + "/get_users", true);
@@ -262,34 +262,24 @@ function getUsers() {
     xhr.onreadystatechange = function() {
         if (xhr.readyState == 4) {
             if (xhr.status == 200) {
-                let x = JSON.parse(this.responseText);
-                let userID = 'user_' + x.text;
 
-                if (x.msg == "add") {
-                    if (!document.getElementById(userID)) {
-                        let divUsers = document.createElement('div');
-                        divUsers.className = 'user';
-                        divUsers.id = userID;
-                        divUsers.appendChild(document.createTextNode(x.text));
-                        document.getElementById('online_list_users')
-                            .appendChild(divUsers);
-                    }
-                } else if (x.msg == "delete") {
-                    let del = document.getElementById(userID);
-                    del.parentNode.removeChild(del);
-                } else
-                    window.location.replace(window.location.origin + '/error'
-                        + xhr.statusCode);
+                const x = JSON.parse(this.responseText);
+                document.getElementById('online_list_users').innerHTML = '';
 
-                getUsers();
-
-            } else {
-                setTimeout(subscribe, 100);
+                x.forEach(function (user) {
+                    let userID = 'user_' + user;
+                    let divUsers = document.createElement('div');
+                    divUsers.className = 'user';
+                    divUsers.id = userID;
+                    divUsers.appendChild(document.createTextNode(user));
+                    document.getElementById('online_list_users')
+                        .appendChild(divUsers);
+                });
             }
-        }
-    };
 
-    xhr.onabort = function() { //this function let page not to fall after error
-        setTimeout(subscribe, 100);
-    };
+            setTimeout(getOnlineUsers, 5 * 1000);
+
+        }
+    }
+
 }
