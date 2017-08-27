@@ -159,18 +159,17 @@ https.createServer(options, function(req, res) {
                                             '/getMessages', err);
                                     });
                                 break;
+                            case '/msg':
+                                db.dialogs.getMessages(room, 0, true)
+                                    .then(function(data) {
+                                        res.end(JSON.stringify(data));
 
-                  //          case '/msg':
-                  //              db.dialogs.getMessages(room, 0, true)
-                  //                  .then(function(data) {
-                   //                     res.end(JSON.stringify(data));
-                  //
-                   //                 })
-                   //                 .catch(function (err) {
-                   //                     log.error('Error at app.js/chat/msg' +
-                    //                        '/getMessages', err);
-                    //                });
-                    //            break;
+                                    })
+                                    .catch(function (err) {
+                                        log.error('Error at app.js/chat/msg' +
+                                            '/getMessages', err);
+                                    });
+                                break;
                             case '/exit':
                                 // КОСТЫЛЬ res.writeHead(302, { Location: '' });
                                 res.end();
