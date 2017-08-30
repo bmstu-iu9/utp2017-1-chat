@@ -32,6 +32,8 @@ function publish() {
     let inputFileToLoad = document.getElementById("inputFileToLoad").files[0];
 
     if (inputFileToLoad) {
+        document.getElementById("indicator").innerHTML = "Файл грузится";
+
         let fileReader = new FileReader();
 
         fileReader.addEventListener("load", function() {
@@ -58,6 +60,9 @@ function publish() {
         newInput.id = oldInput.id;
 
         oldInput.parentNode.replaceChild(newInput, oldInput);
+
+        document.getElementById("indicator").innerHTML = "Загружено";
+        setTimeout("document.getElementById(\"indicator\").innerHTML = \"\";", 3000);
     } else {
 
         let xhr = new XMLHttpRequest();
