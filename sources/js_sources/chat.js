@@ -49,6 +49,9 @@ function publish() {
 
         });
 
+        document.getElementById("indicator").innerHTML = "Загружено";
+        setTimeout("document.getElementById(\"indicator\").innerHTML = \"\";", 3000);
+
         fileReader.readAsDataURL(inputFileToLoad);
 
         let oldInput = document.getElementById("inputFileToLoad");
@@ -60,9 +63,6 @@ function publish() {
         newInput.id = oldInput.id;
 
         oldInput.parentNode.replaceChild(newInput, oldInput);
-
-        document.getElementById("indicator").innerHTML = "Загружено";
-        setTimeout("document.getElementById(\"indicator\").innerHTML = \"\";", 3000);
     } else {
 
         let xhr = new XMLHttpRequest();
