@@ -68,6 +68,14 @@ const origin = window.location.origin;
  * Registration functions
  */
 function registration() {
+    if (document.getElementById('alert_text_reg_login')) {
+        let del = document.getElementById('alert_text_reg_login');
+        del.parentNode.removeChild(del);
+    }
+    if (document.getElementById('alert_text_reg')) {
+        let del = document.getElementById('alert_text_reg');
+        del.parentNode.removeChild(del);
+    }
 
     let login = document.getElementById("login").value;
     let password = document.getElementById("password").value;
@@ -105,26 +113,33 @@ function registration() {
                 window.location.replace(origin + '/error' + err);
             });
     } else {
-        //Добавление красной рамки и сообщения
-        document.getElementById("password")
-            .setAttribute("style", "border:1px solid red;");
-        document.getElementById("repeat_password")
-            .setAttribute("style", "border:1px solid red;");
-
         let divAlert = document.createElement('div');
         divAlert.setAttribute("style", "color:red");
         divAlert.id = 'alert_text_reg';
+        if (login.length == 0) {
+            //Добавление красной рамки и сообщения
+            document.getElementById("login")
+                .setAttribute("style", "border:1px solid red;");
+            divAlert.appendChild(document.createTextNode("Заполните поле"));
+        } else {
+            //Добавление красной рамки и сообщения
+            document.getElementById("password")
+                .setAttribute("style", "border:1px solid red;");
+            document.getElementById("repeat_password")
+                .setAttribute("style", "border:1px solid red;");
 
-        if (password !== passwordRepeat) {
-            divAlert.appendChild(document.createTextNode("Пароли не совпадают"));
+            if (password !== passwordRepeat) {
+                divAlert.appendChild(document.createTextNode("Пароли не совпадают"));
+            }
+            else if (password.length < 6 && password.length > 0) {
+                divAlert.appendChild(document.createTextNode("Пароль слишком короткий"));
+            } else if (password.length == 0) {
+                    divAlert.appendChild(document.createTextNode("Заполните поля"));
+            }
+            document.getElementById("password").value = "";
+            document.getElementById("repeat_password").value = "";
         }
-        else if (password.length < 6) {
-            divAlert.appendChild(document.createTextNode("Пароль слишком короткий"));
-        }
-
         document.getElementById("registration_form").appendChild(divAlert);
-        document.getElementById("password").value = "";
-        document.getElementById("repeat_password").value = "";
     }
 }
 
@@ -189,6 +204,10 @@ function reg(login, password, salt) {
 function authentication() {
     let login = document.getElementById("login1").value;
     let password = document.getElementById("password1").value;
+    if (document.getElementById('alert_text_auth')) {
+        let del = document.getElementById('alert_text_auth');
+        del.parentNode.removeChild(del);
+    }
 
     /**
      * This block of promises takes a login and session ID,

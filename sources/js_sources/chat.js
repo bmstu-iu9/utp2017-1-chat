@@ -32,6 +32,8 @@ function publish() {
     let inputFileToLoad = document.getElementById("inputFileToLoad").files[0];
 
     if (inputFileToLoad) {
+        document.getElementById("indicator").innerHTML = "Файл грузится";
+
         let fileReader = new FileReader();
 
         fileReader.addEventListener("load", function() {
@@ -46,6 +48,9 @@ function publish() {
             document.getElementById("message").value = "";
 
         });
+
+        document.getElementById("indicator").innerHTML = "Загружено";
+        setTimeout("document.getElementById(\"indicator\").innerHTML = \"\";", 3000);
 
         fileReader.readAsDataURL(inputFileToLoad);
 
